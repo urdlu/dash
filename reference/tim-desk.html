@@ -1,0 +1,288 @@
+<title>Tim's Desk</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a morning desk blotter — one header strip, two working panels side by side, stacking on phones */
+:root{
+  --bg:#eef1f4; --panel:#ffffff; --ink:#15202b; --muted:#5b6876; --line:#d6dde4;
+  --accent:#2c5f7c; --accent-soft:#e1ecf2;
+  --up:#1d7a4d; --down:#b3402f; --warn-bg:#fff3d6; --warn-ink:#7a5300;
+  --f-display:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-body:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f151b; --panel:#17202a; --ink:#e4eaf0; --muted:#8d9aa8; --line:#26323f;
+  --accent:#7fb4d3; --accent-soft:#1c2e3b; --up:#58c08b; --down:#ec7a66; --warn-bg:#3a2e12; --warn-ink:#f2cf7a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f151b; --panel:#17202a; --ink:#e4eaf0; --muted:#8d9aa8; --line:#26323f;
+  --accent:#7fb4d3; --accent-soft:#1c2e3b; --up:#58c08b; --down:#ec7a66; --warn-bg:#3a2e12; --warn-ink:#f2cf7a; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
+.wrap{max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:24px 40px;display:grid;gap:20px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 20px}
+h1{font-family:var(--f-display);font-weight:700;font-size:1.75rem;letter-spacing:-.01em;margin:0;text-wrap:balance}
+.clock{font-family:var(--f-mono);color:var(--muted);font-size:.9rem;font-variant-numeric:tabular-nums}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:20px;align-items:start}
+section.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;min-width:0;display:grid}
+.ph{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:16px 18px 12px;border-bottom:1px solid var(--line)}
+.ph h2{margin:0;font-family:var(--f-display);font-size:1.05rem;font-weight:600}
+.eyebrow{display:block;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pill{font-size:.72rem;font-weight:600;padding:3px 8px;border-radius:999px;letter-spacing:.02em;white-space:nowrap}
+.pill.live{background:var(--accent-soft);color:var(--accent)}
+.pill.live::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-right:6px;vertical-align:1px}
+.pill.sample{background:var(--warn-bg);color:var(--warn-ink)}
+.pill.err{background:var(--warn-bg);color:var(--warn-ink)}
+.stamp{font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
+button.ref{font:inherit;font-size:.78rem;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:6px;padding:3px 9px;cursor:pointer}
+button.ref:hover{border-color:var(--accent);color:var(--accent)}
+button.ref:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.summary{display:flex;gap:28px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line)}
+.stat b{display:block;font-family:var(--f-mono);font-size:1.4rem;font-weight:500;font-variant-numeric:tabular-nums}
+.stat span{font-size:.75rem;color:var(--muted)}
+ul.rows{list-style:none;margin:0;padding:4px 0}
+.rows li{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:9px 18px;min-width:0}
+.rows li+li{border-top:1px solid var(--line)}
+.type{font-family:var(--f-mono);font-size:.68rem;font-weight:500;width:44px;text-align:center;padding:3px 0;border-radius:4px;background:var(--accent-soft);color:var(--accent)}
+.fname{min-width:0}
+.fname a{color:var(--ink);text-decoration:none;font-weight:500;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fname a:hover{color:var(--accent);text-decoration:underline}
+.fname small{color:var(--muted);font-size:.75rem}
+.when{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.tick li{grid-template-columns:minmax(0,1fr) 84px auto}
+.sym b{font-family:var(--f-mono);font-weight:500}
+.sym small{display:block;color:var(--muted);font-size:.75rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.px{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
+.px small{display:block;font-size:.75rem}
+.upc{color:var(--up)} .dnc{color:var(--down)}
+svg.spark{width:84px;height:28px;display:block}
+.empty{padding:28px 18px;color:var(--muted);font-size:.9rem}
+.note{padding:10px 18px 14px;font-size:.78rem;color:var(--muted);border-top:1px solid var(--line)}
+.skel{height:14px;border-radius:4px;background:var(--line);opacity:.6}
+@media (prefers-reduced-motion:no-preference){.skel{animation:p 1.4s ease-in-out infinite}@keyframes p{50%{opacity:.25}}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Tim's Desk</h1>
+    <div class="clock" id="clock">Vancouver</div>
+  </header>
+
+  <div class="grid">
+    <!-- Panel 1: Google Drive, live -->
+    <section class="panel" id="drive" aria-labelledby="drive-h">
+      <div class="ph">
+        <div><span class="eyebrow">Google Drive</span><h2 id="drive-h">Recently changed files</h2></div>
+        <div class="meta">
+          <span class="pill live" id="drive-pill">Live</span>
+          <span class="stamp" id="drive-stamp">connecting…</span>
+          <button class="ref" id="drive-refresh" type="button">Refresh</button>
+        </div>
+      </div>
+      <div class="summary" id="drive-summary">
+        <div class="stat"><b id="s-today">–</b><span>changed today</span></div>
+        <div class="stat"><b id="s-week">–</b><span>changed in last 7 days</span></div>
+        <div class="stat"><b id="s-latest">–</b><span>last edit</span></div>
+      </div>
+      <ul class="rows" id="drive-list">
+        <li><span class="type">…</span><div class="skel"></div><span></span></li>
+        <li><span class="type">…</span><div class="skel"></div><span></span></li>
+        <li><span class="type">…</span><div class="skel"></div><span></span></li>
+      </ul>
+      <div class="note">Pulls from your Google Drive connector every 5 minutes while this page is open.</div>
+    </section>
+
+    <!-- Panel 2: Market watch, fed by the artifact database -->
+    <section class="panel" id="mkt" aria-labelledby="mkt-h">
+      <div class="ph">
+        <div><span class="eyebrow">Market watch</span><h2 id="mkt-h">Watchlist</h2></div>
+        <div class="meta">
+          <span class="pill sample" id="mkt-pill" hidden>Sample data</span>
+          <span class="stamp" id="mkt-stamp">waiting for data…</span>
+        </div>
+      </div>
+      <ul class="rows tick" id="mkt-list"></ul>
+      <div class="empty" id="mkt-empty">No watchlist rows yet. Claude fills this list from a scheduled refresh; tell Claude which tickers to track.</div>
+      <div class="note" id="mkt-note">Rows marked sample are placeholders, not real quotes.</div>
+    </section>
+  </div>
+</div>
+
+<script>
+(function(){
+  const TZ = "America/Vancouver";
+  const $ = id => document.getElementById(id);
+
+  // ---------- clock ----------
+  function tickClock(){
+    const d = new Date();
+    $("clock").textContent = d.toLocaleDateString("en-CA",{timeZone:TZ,weekday:"long",month:"long",day:"numeric"}) +
+      " · " + d.toLocaleTimeString("en-CA",{timeZone:TZ,hour:"numeric",minute:"2-digit"}) + " PT";
+  }
+  tickClock(); setInterval(tickClock, 30000);
+
+  function rel(ms){
+    const s = Math.round((Date.now()-ms)/1000);
+    if (s < 60) return "just now";
+    const m = Math.round(s/60); if (m < 60) return m + " min ago";
+    const h = Math.round(m/60); if (h < 24) return h + " h ago";
+    const d = Math.round(h/24); if (d < 7) return d + " d ago";
+    return new Date(ms).toLocaleDateString("en-CA",{timeZone:TZ,month:"short",day:"numeric"});
+  }
+  const dayKey = ms => new Date(ms).toLocaleDateString("en-CA",{timeZone:TZ});
+
+  // ---------- Drive panel ----------
+  const DRIVE = "Google Drive", TOOL = "list_recent_files";
+  const INPUT = {pageSize: 12, orderBy: "lastModified", excludeContentSnippets: true};
+  let driveUpdated = null, driveFiles = null;
+
+  function typeOf(f){
+    const m = f.mimeType || "";
+    if (m.includes("google-apps.spreadsheet") || /xlsx?|csv/.test(f.fileExtension||"")) return "SHEET";
+    if (m.includes("google-apps.document") || /docx?/.test(f.fileExtension||"")) return "DOC";
+    if (m.includes("google-apps.presentation") || /pptx?/.test(f.fileExtension||"")) return "SLIDE";
+    if (m.includes("pdf")) return "PDF";
+    if (m.includes("folder")) return "DIR";
+    if (m.startsWith("image/")) return "IMG";
+    return (f.fileExtension || "FILE").slice(0,5).toUpperCase();
+  }
+
+  function renderDrive(){
+    const list = $("drive-list");
+    list.replaceChildren();
+    if (!driveFiles) return;
+    if (!driveFiles.length){
+      const li = document.createElement("li"); li.className = "empty"; li.style.display="block";
+      li.textContent = "No recent files in your Drive."; list.append(li);
+    }
+    const today = dayKey(Date.now()), weekAgo = Date.now() - 7*864e5;
+    let nToday = 0, nWeek = 0, latest = 0;
+    for (const f of driveFiles){
+      const t = Date.parse(f.modifiedTime || f.viewedByMeTime || f.createdTime || "") || 0;
+      if (t && dayKey(t) === today) nToday++;
+      if (t >= weekAgo) nWeek++;
+      latest = Math.max(latest, t);
+      const li = document.createElement("li");
+      const ty = document.createElement("span"); ty.className = "type"; ty.textContent = typeOf(f);
+      const nm = document.createElement("div"); nm.className = "fname";
+      const a = document.createElement("a"); a.textContent = f.title || "Untitled";
+      if (f.viewUrl) { a.href = f.viewUrl; a.target = "_blank"; a.rel = "noopener"; }
+      const sm = document.createElement("small");
+      sm.textContent = (f.owner ? f.owner.split("@")[0] : "") + (f.createdTime && Date.parse(f.createdTime) > weekAgo ? " · new this week" : "");
+      nm.append(a, sm);
+      const w = document.createElement("span"); w.className = "when"; w.textContent = t ? rel(t) : "";
+      li.append(ty, nm, w); list.append(li);
+    }
+    $("s-today").textContent = nToday;
+    $("s-week").textContent = nWeek + (driveFiles.length >= INPUT.pageSize && nWeek >= INPUT.pageSize ? "+" : "");
+    $("s-latest").textContent = latest ? rel(latest) : "–";
+  }
+
+  function driveStatus(text, err){
+    const pill = $("drive-pill");
+    pill.className = "pill " + (err ? "err" : "live");
+    pill.textContent = err ? "Not connected" : "Live";
+    $("drive-stamp").textContent = text;
+  }
+  function refreshStamp(){ if (driveUpdated && driveFiles) $("drive-stamp").textContent = "updated " + rel(driveUpdated); }
+  setInterval(()=>{ refreshStamp(); if (driveFiles) renderDrive(); }, 60000);
+
+  function driveError(e){
+    const code = e && e.code;
+    const retract = ["needs_reauth","server_not_connected","blocked_by_policy","approval_required","not_in_manifest","selection_required","not_granted","capability_disabled","consent_required"];
+    const msgs = {
+      needs_reauth: "Reconnect Google Drive in claude.ai Settings → Connectors.",
+      server_not_connected: "Add Google Drive in claude.ai Settings → Connectors.",
+      selection_required: "Choose which Google Drive connector this page should use.",
+      not_in_manifest: "Google Drive access was turned off for this page.",
+      consent_required: "Allow Google Drive for this page to see your files.",
+      blocked_by_policy: "Your organization blocks this Drive tool.",
+      approval_required: "This Drive tool needs approval first."
+    };
+    if (retract.includes(code)){
+      driveFiles = null; $("drive-list").replaceChildren();
+      const li = document.createElement("li"); li.className = "empty"; li.style.display = "block";
+      li.textContent = msgs[code] || "Google Drive isn't available in this view.";
+      $("drive-list").append(li);
+      driveStatus("", true);
+    } else {
+      $("drive-stamp").textContent = (driveFiles ? "showing last good data · " : "") + (e && e.message ? "Drive didn't answer" : "error");
+    }
+  }
+
+  let mcpRef = null;
+  (window.claude?.use ? claude.use("mcp") : Promise.resolve(null)).then(mcp => {
+    mcpRef = mcp;
+    if (!mcp){ driveError({code:"capability_disabled"}); return; }
+    mcp.watchTool(DRIVE, TOOL, INPUT, ev => {
+      if (ev.type === "error") return driveError(ev.error);
+      const p = ev.result && ev.result.payload;
+      const files = p && Array.isArray(p.files) ? p.files : [];
+      driveFiles = files;
+      driveUpdated = (ev.result.cache && ev.result.cache.storedAt) || Date.now();
+      driveStatus("updated " + rel(driveUpdated), false);
+      renderDrive();
+    }, {refetchInterval: 5*60*1000});
+  });
+  $("drive-refresh").addEventListener("click", () => {
+    if (!mcpRef) return;
+    $("drive-stamp").textContent = "refreshing…";
+    mcpRef.invalidate(DRIVE, TOOL).catch(()=>{});
+  });
+
+  // ---------- Market panel (db) ----------
+  function spark(vals, up){
+    const svgNS = "http://www.w3.org/2000/svg";
+    const svg = document.createElementNS(svgNS,"svg"); svg.setAttribute("class","spark"); svg.setAttribute("viewBox","0 0 84 28");
+    if (!Array.isArray(vals) || vals.length < 2) return svg;
+    const lo = Math.min(...vals), hi = Math.max(...vals), span = (hi-lo)||1;
+    const pts = vals.map((v,i)=>[2 + i*(80/(vals.length-1)), 25 - ((v-lo)/span)*22]);
+    const d = pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+    const col = up ? "var(--up)" : "var(--down)";
+    const area = document.createElementNS(svgNS,"path");
+    area.setAttribute("d", d + ` L${pts.at(-1)[0].toFixed(1)} 27 L2 27 Z`); area.setAttribute("fill", col); area.setAttribute("opacity",".12");
+    const line = document.createElementNS(svgNS,"path");
+    line.setAttribute("d", d); line.setAttribute("fill","none"); line.setAttribute("stroke", col); line.setAttribute("stroke-width","1.6");
+    const dot = document.createElementNS(svgNS,"circle");
+    dot.setAttribute("cx", pts.at(-1)[0]); dot.setAttribute("cy", pts.at(-1)[1]); dot.setAttribute("r","2.4"); dot.setAttribute("fill", col);
+    svg.append(area, line, dot); return svg;
+  }
+  const fmt = (n, cur) => {
+    if (typeof n !== "number") return "–";
+    const dp = n >= 1000 ? 0 : 2;
+    return n.toLocaleString("en-CA",{minimumFractionDigits:dp,maximumFractionDigits:dp}) + (cur ? " " + cur : "");
+  };
+
+  function renderMkt(docs){
+    const list = $("mkt-list"); list.replaceChildren();
+    const rows = docs.map(d => d.data()).filter(Boolean).sort((a,b)=>(a.order??99)-(b.order??99));
+    $("mkt-empty").hidden = rows.length > 0;
+    const anySample = rows.some(r => r.sample);
+    $("mkt-pill").hidden = !anySample;
+    $("mkt-note").hidden = !anySample;
+    let newest = 0;
+    for (const r of rows){
+      const up = (r.change_pct ?? 0) >= 0;
+      const li = document.createElement("li");
+      const s = document.createElement("div"); s.className = "sym";
+      const b = document.createElement("b"); b.textContent = r.symbol || "?";
+      const sm = document.createElement("small"); sm.textContent = (r.name || "") + (r.sample ? " · sample" : "");
+      s.append(b, sm);
+      const px = document.createElement("div"); px.className = "px";
+      px.append(document.createTextNode(fmt(r.price, r.currency)));
+      const ch = document.createElement("small"); ch.className = up ? "upc" : "dnc";
+      ch.textContent = typeof r.change_pct === "number" ? (up ? "▲ " : "▼ ") + Math.abs(r.change_pct).toFixed(2) + "%" : "";
+      px.append(ch);
+      li.append(s, spark(r.spark, up), px); list.append(li);
+      const t = Date.parse(r.as_of || ""); if (t) newest = Math.max(newest, t);
+    }
+    $("mkt-stamp").textContent = newest ? "as of " + rel(newest) : (rows.length ? "" : "waiting for data…");
+  }
+
+  (window.claude?.use ? claude.use("db") : Promise.resolve(null)).then(db => {
+    if (!db){ $("mkt-stamp").textContent = "sign in to see the watchlist"; return; }
+    db.collection("watchlist").onSnapshot(snap => renderMkt(snap.docs),
+      () => { $("mkt-stamp").textContent = "watchlist unavailable — reload the page"; });
+  });
+})();
+</script>
