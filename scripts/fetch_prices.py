@@ -45,14 +45,23 @@ def fetch_yfinance(t):
     return price, change_pct, series
 
 
-def fetch_coingecko(t):
+def fetch_coingecko(t, retries=3):
     cid = t["coingecko_id"]
-    r = requests.get(
-        f"https://api.coingecko.com/api/v3/coins/{cid}/market_chart",
-        params={"vs_currency": "cad", "days": HISTORY_DAYS, "interval": "daily"},
-        timeout=30,
-    )
-    r.raise_for_status()
+    last_err = None
+    for attempt in range(retries):
+        r = requests.get(
+            f"https://api.coingecko.com/api/v3/coins/{cid}/market_chart",
+            params={"vs_currency": "cad", "days": HISTORY_DAYS, "interval": "daily"},
+            timeout=30,
+        )
+        if r.status_code == 429:
+            last_err = requests.HTTPError(f"429 rate limited (attempt {attempt + 1}/{retries})")
+            time.sleep(8 * (attempt + 1))  # backoff: 8s, 16s, 24s
+            continue
+        r.raise_for_status()
+        break
+    else:
+        raise last_err
     prices = r.json()["prices"]  # [[ms, price], ...]
     series = []
     for ms, price in prices:
