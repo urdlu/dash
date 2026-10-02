@@ -8,6 +8,9 @@ on:
     - cron: "50 13,20 * * *"
   workflow_dispatch: {}  # allows manual "Run workflow" from the Actions tab
 
+permissions:
+  contents: write  # the "Commit updated data files" step needs to push
+
 jobs:
   fetch:
     runs-on: ubuntu-latest
