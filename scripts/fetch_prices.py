@@ -132,6 +132,7 @@ def push_to_sheet(current_rows, history_by_symbol):
             r["order"], r["symbol"], r["name"], r["price"], r["currency"],
             r["change_pct"], ",".join(str(v) for v in r["spark"]), r["as_of"], str(r["sample"]).lower(),
         ])
+    sheets_writer.ensure_sheet_exists("Current")
     sheets_writer.update_range(f"Current!A1:I{len(rows)}", rows)
 
     sheets_writer.ensure_sheet_exists("History")
