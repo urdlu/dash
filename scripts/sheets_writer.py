@@ -24,6 +24,13 @@ def _get_service():
     return build("sheets", "v4", credentials=creds)
 
 
+def clear_range(sheet_range: str):
+    service = _get_service()
+    service.spreadsheets().values().clear(
+        spreadsheetId=SPREADSHEET_ID, range=sheet_range, body={}
+    ).execute()
+
+
 def update_range(sheet_range: str, rows: list[list]):
     service = _get_service()
     body = {"values": rows}

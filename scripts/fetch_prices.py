@@ -133,6 +133,7 @@ def push_to_sheet(current_rows, history_by_symbol):
             r["change_pct"], ",".join(str(v) for v in r["spark"]), r["as_of"], str(r["sample"]).lower(),
         ])
     sheets_writer.ensure_sheet_exists("Current")
+    sheets_writer.clear_range("Current!A1:Z1000")  # drop any stale rows from a prior, longer ticker list
     sheets_writer.update_range(f"Current!A1:I{len(rows)}", rows)
 
     sheets_writer.ensure_sheet_exists("History")
@@ -142,6 +143,7 @@ def push_to_sheet(current_rows, history_by_symbol):
     for d in all_dates:
         hist_rows.append([d] + [history_by_symbol[s].get(d, "") for s in symbols])
     col_letter = chr(ord("A") + len(symbols))  # e.g. 10 symbols -> up to column K
+    sheets_writer.clear_range("History!A1:Z10000")  # same: drop stale columns/rows from a prior run
     sheets_writer.update_range(f"History!A1:{col_letter}{len(hist_rows)}", hist_rows)
 
 
