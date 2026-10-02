@@ -1,8 +1,9 @@
+<meta charset="utf-8">
 <title>Tim's Desk</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a morning desk blotter — one header strip, two working panels side by side, stacking on phones */
+/* Layout: a morning desk blotter — header strip, panels in a wrapping grid, stacking on phones */
 :root{
   --bg:#eef1f4; --panel:#ffffff; --ink:#15202b; --muted:#5b6876; --line:#d6dde4;
   --accent:#2c5f7c; --accent-soft:#e1ecf2;
@@ -36,7 +37,7 @@ section.panel{background:var(--panel);border:1px solid var(--line);border-radius
 .stamp{font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
 button.ref{font:inherit;font-size:.78rem;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:6px;padding:3px 9px;cursor:pointer}
 button.ref:hover{border-color:var(--accent);color:var(--accent)}
-button.ref:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button.ref:focus-visible,a:focus-visible,.pill-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 .summary{display:flex;gap:28px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line)}
 .stat b{display:block;font-family:var(--f-mono);font-size:1.4rem;font-weight:500;font-variant-numeric:tabular-nums}
 .stat span{font-size:.75rem;color:var(--muted)}
@@ -60,6 +61,22 @@ svg.spark{width:84px;height:28px;display:block}
 .note{padding:10px 18px 14px;font-size:.78rem;color:var(--muted);border-top:1px solid var(--line)}
 .skel{height:14px;border-radius:4px;background:var(--line);opacity:.6}
 @media (prefers-reduced-motion:no-preference){.skel{animation:p 1.4s ease-in-out infinite}@keyframes p{50%{opacity:.25}}}
+
+/* Panel 3: price history chart */
+.pills{display:flex;gap:6px;flex-wrap:wrap;padding:12px 18px 0}
+.pill-btn{font:inherit;font-size:.76rem;font-family:var(--f-mono);border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 11px;cursor:pointer}
+.pill-btn:hover{border-color:var(--accent);color:var(--accent)}
+.pill-btn[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);border-color:transparent;font-weight:600}
+.chart-wrap{position:relative;padding:12px 18px 4px}
+svg.hist{width:100%;height:170px;display:block;overflow:visible}
+.hist-grid{stroke:var(--line);stroke-width:1}
+.hist-axis{fill:var(--muted);font-size:10px;font-family:var(--f-mono)}
+.hist-line{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.hist-area{opacity:.12}
+.hist-crosshair{stroke:var(--muted);stroke-width:1;stroke-dasharray:2 3;opacity:0;pointer-events:none}
+.hist-dot{stroke:var(--panel);stroke-width:2}
+.hist-hit{fill:transparent;cursor:crosshair}
+.tooltip{position:absolute;pointer-events:none;background:var(--ink);color:var(--panel);font-size:11.5px;line-height:1.4;padding:6px 9px;border-radius:6px;opacity:0;transform:translate(-50%,calc(-100% - 8px));white-space:nowrap;font-family:var(--f-mono);transition:opacity .08s ease;z-index:2}
 </style>
 
 <div class="wrap">
@@ -92,18 +109,36 @@ svg.spark{width:84px;height:28px;display:block}
       <div class="note">Pulls from your Google Drive connector every 5 minutes while this page is open.</div>
     </section>
 
-    <!-- Panel 2: Market watch, fed by the artifact database -->
+    <!-- Panel 2: Market watch, fed by a Google Sheet a GitHub Actions job keeps current -->
     <section class="panel" id="mkt" aria-labelledby="mkt-h">
       <div class="ph">
         <div><span class="eyebrow">Market watch</span><h2 id="mkt-h">Watchlist</h2></div>
         <div class="meta">
           <span class="pill sample" id="mkt-pill" hidden>Sample data</span>
           <span class="stamp" id="mkt-stamp">waiting for data…</span>
+          <button class="ref" id="mkt-refresh" type="button">Refresh</button>
         </div>
       </div>
       <ul class="rows tick" id="mkt-list"></ul>
-      <div class="empty" id="mkt-empty">No watchlist rows yet. Claude fills this list from a scheduled refresh; tell Claude which tickers to track.</div>
+      <div class="empty" id="mkt-empty">No watchlist rows yet.</div>
       <div class="note" id="mkt-note">Rows marked sample are placeholders, not real quotes.</div>
+    </section>
+
+    <!-- Panel 3: price history, from the same Sheet's History tab -->
+    <section class="panel" id="hist" aria-labelledby="hist-h">
+      <div class="ph">
+        <div><span class="eyebrow">Price history</span><h2 id="hist-h">90-day chart</h2></div>
+        <div class="meta">
+          <span class="stamp" id="hist-stamp">waiting for data…</span>
+        </div>
+      </div>
+      <div class="pills" id="hist-pills"></div>
+      <div class="chart-wrap">
+        <svg class="hist" id="hist-svg" viewBox="0 0 600 170" preserveAspectRatio="none"></svg>
+        <div class="tooltip" id="hist-tooltip"></div>
+      </div>
+      <div class="empty" id="hist-empty">No history yet.</div>
+      <div class="note">Reads the same Sheet as Watchlist - a GitHub Actions job writes both ~twice a day.</div>
     </section>
   </div>
 </div>
@@ -112,6 +147,7 @@ svg.spark{width:84px;height:28px;display:block}
 (function(){
   const TZ = "America/Vancouver";
   const $ = id => document.getElementById(id);
+  const SHEET_FILE_ID = "1rKLxaCrsAkvYPAff77JrOjBbfr3ix2CmClVhx7td03c"; // "Tim's Desk Prices"
 
   // ---------- clock ----------
   function tickClock(){
@@ -132,8 +168,9 @@ svg.spark{width:84px;height:28px;display:block}
   const dayKey = ms => new Date(ms).toLocaleDateString("en-CA",{timeZone:TZ});
 
   // ---------- Drive panel ----------
-  const DRIVE = "Google Drive", TOOL = "list_recent_files";
-  const INPUT = {pageSize: 12, orderBy: "lastModified", excludeContentSnippets: true};
+  const DRIVE = "Google Drive";
+  const DRIVE_TOOL = "list_recent_files";
+  const DRIVE_INPUT = {pageSize: 12, orderBy: "lastModified", excludeContentSnippets: true};
   let driveUpdated = null, driveFiles = null;
 
   function typeOf(f){
@@ -174,7 +211,7 @@ svg.spark{width:84px;height:28px;display:block}
       li.append(ty, nm, w); list.append(li);
     }
     $("s-today").textContent = nToday;
-    $("s-week").textContent = nWeek + (driveFiles.length >= INPUT.pageSize && nWeek >= INPUT.pageSize ? "+" : "");
+    $("s-week").textContent = nWeek + (driveFiles.length >= DRIVE_INPUT.pageSize && nWeek >= DRIVE_INPUT.pageSize ? "+" : "");
     $("s-latest").textContent = latest ? rel(latest) : "–";
   }
 
@@ -213,8 +250,9 @@ svg.spark{width:84px;height:28px;display:block}
   let mcpRef = null;
   (window.claude?.use ? claude.use("mcp") : Promise.resolve(null)).then(mcp => {
     mcpRef = mcp;
-    if (!mcp){ driveError({code:"capability_disabled"}); return; }
-    mcp.watchTool(DRIVE, TOOL, INPUT, ev => {
+    if (!mcp){ driveError({code:"capability_disabled"}); mktUnavailable(); return; }
+
+    mcp.watchTool(DRIVE, DRIVE_TOOL, DRIVE_INPUT, ev => {
       if (ev.type === "error") return driveError(ev.error);
       const p = ev.result && ev.result.payload;
       const files = p && Array.isArray(p.files) ? p.files : [];
@@ -223,14 +261,94 @@ svg.spark{width:84px;height:28px;display:block}
       driveStatus("updated " + rel(driveUpdated), false);
       renderDrive();
     }, {refetchInterval: 5*60*1000});
+
+    mcp.watchTool(DRIVE, "read_file_content", {fileId: SHEET_FILE_ID}, ev => {
+      if (ev.type === "error"){ mktUnavailable(); return; }
+      const text = ev.result && ev.result.payload && ev.result.payload.fileContent;
+      if (!text) return;
+      onSheetText(text);
+    }, {refetchInterval: 5*60*1000});
   });
   $("drive-refresh").addEventListener("click", () => {
     if (!mcpRef) return;
     $("drive-stamp").textContent = "refreshing…";
-    mcpRef.invalidate(DRIVE, TOOL).catch(()=>{});
+    mcpRef.invalidate(DRIVE, DRIVE_TOOL).catch(()=>{});
   });
+  $("mkt-refresh").addEventListener("click", () => {
+    if (!mcpRef) return;
+    $("mkt-stamp").textContent = "refreshing…";
+    mcpRef.invalidate(DRIVE, "read_file_content").catch(()=>{});
+  });
+  function mktUnavailable(){
+    $("mkt-stamp").textContent = "connect Google Drive to see the watchlist";
+    $("hist-stamp").textContent = "";
+  }
 
-  // ---------- Market panel (db) ----------
+  // ---------- parsing the Sheet's "read_file_content" text into rows ----------
+  // The connector returns a markdown-ish multi-table document: each sheet tab
+  // becomes its own "### Sheet Name: X" section with a pipe table under
+  // "### Table Sample Data:". Each table has a blank spacer row, a ":---:"
+  // alignment row, THEN the real header row, then data rows. Cells escape
+  // markdown-special characters with a backslash (e.g. "change\_pct", "\-0.5").
+  function unescapeMd(s){ return s.replace(/\\(.)/g, "$1").trim(); }
+  function splitRow(line){ return line.split("|").slice(1,-1).map(unescapeMd); }
+
+  function parseSheetTables(text){
+    const out = {};
+    const chunks = text.split(/###\s*Sheet Name:\s*/).slice(1);
+    for (const chunk of chunks){
+      const name = (chunk.match(/^([^\n]+)/) || [null,"?"])[1].trim();
+      const m = chunk.match(/###\s*Table Sample Data:\s*\n([\s\S]*?)(?=\n###\s|$)/);
+      if (!m){ out[name] = []; continue; }
+      const lines = m[1].split("\n").map(l=>l.trim()).filter(l=>l.startsWith("|"));
+      if (lines.length < 4){ out[name] = []; continue; }
+      const header = splitRow(lines[2]);
+      out[name] = lines.slice(3).map(line => {
+        const cells = splitRow(line);
+        const o = {}; header.forEach((h,i)=>{ o[h] = cells[i] ?? ""; }); return o;
+      });
+    }
+    return out;
+  }
+
+  function toCurrentRows(raw){
+    return (raw||[]).map(r => ({
+      order: parseInt(r.order,10) || 99,
+      symbol: r.symbol || "?",
+      name: r.name || "",
+      price: parseFloat(r.price),
+      currency: r.currency || "",
+      change_pct: parseFloat(r.change_pct),
+      spark: (r.spark||"").split(",").map(Number).filter(n=>!isNaN(n)),
+      as_of: r.as_of || "",
+      sample: String(r.sample).trim().toLowerCase() === "true",
+    })).sort((a,b)=>a.order-b.order);
+  }
+
+  function toHistorySeries(raw){
+    if (!raw || !raw.length) return {dates:[], series:{}};
+    const dates = raw.map(r=>r.date);
+    const symbols = Object.keys(raw[0]).filter(k=>k!=="date");
+    const series = {};
+    for (const sym of symbols){
+      series[sym] = raw.map(r => { const v = parseFloat(r[sym]); return isNaN(v) ? null : v; });
+    }
+    return {dates, series};
+  }
+
+  function onSheetText(text){
+    const tables = parseSheetTables(text);
+    renderMkt(toCurrentRows(tables["Current"]));
+    const hist = toHistorySeries(tables["History"]);
+    histState.dates = hist.dates; histState.series = hist.series;
+    const symbols = Object.keys(hist.series);
+    if (!histState.selected || !symbols.includes(histState.selected)){
+      histState.selected = pickDefaultSymbol(symbols);
+    }
+    renderHistPills(); renderHistChart();
+  }
+
+  // ---------- Market panel (Panel 2) ----------
   function spark(vals, up){
     const svgNS = "http://www.w3.org/2000/svg";
     const svg = document.createElementNS(svgNS,"svg"); svg.setAttribute("class","spark"); svg.setAttribute("viewBox","0 0 84 28");
@@ -248,14 +366,13 @@ svg.spark{width:84px;height:28px;display:block}
     svg.append(area, line, dot); return svg;
   }
   const fmt = (n, cur) => {
-    if (typeof n !== "number") return "–";
+    if (typeof n !== "number" || isNaN(n)) return "–";
     const dp = n >= 1000 ? 0 : 2;
     return n.toLocaleString("en-CA",{minimumFractionDigits:dp,maximumFractionDigits:dp}) + (cur ? " " + cur : "");
   };
 
-  function renderMkt(docs){
+  function renderMkt(rows){
     const list = $("mkt-list"); list.replaceChildren();
-    const rows = docs.map(d => d.data()).filter(Boolean).sort((a,b)=>(a.order??99)-(b.order??99));
     $("mkt-empty").hidden = rows.length > 0;
     const anySample = rows.some(r => r.sample);
     $("mkt-pill").hidden = !anySample;
@@ -271,7 +388,7 @@ svg.spark{width:84px;height:28px;display:block}
       const px = document.createElement("div"); px.className = "px";
       px.append(document.createTextNode(fmt(r.price, r.currency)));
       const ch = document.createElement("small"); ch.className = up ? "upc" : "dnc";
-      ch.textContent = typeof r.change_pct === "number" ? (up ? "▲ " : "▼ ") + Math.abs(r.change_pct).toFixed(2) + "%" : "";
+      ch.textContent = typeof r.change_pct === "number" && !isNaN(r.change_pct) ? (up ? "▲ " : "▼ ") + Math.abs(r.change_pct).toFixed(2) + "%" : "";
       px.append(ch);
       li.append(s, spark(r.spark, up), px); list.append(li);
       const t = Date.parse(r.as_of || ""); if (t) newest = Math.max(newest, t);
@@ -279,10 +396,110 @@ svg.spark{width:84px;height:28px;display:block}
     $("mkt-stamp").textContent = newest ? "as of " + rel(newest) : (rows.length ? "" : "waiting for data…");
   }
 
-  (window.claude?.use ? claude.use("db") : Promise.resolve(null)).then(db => {
-    if (!db){ $("mkt-stamp").textContent = "sign in to see the watchlist"; return; }
-    db.collection("watchlist").onSnapshot(snap => renderMkt(snap.docs),
-      () => { $("mkt-stamp").textContent = "watchlist unavailable — reload the page"; });
-  });
+  // ---------- Price history panel (Panel 3) ----------
+  let histState = {dates:[], series:{}, selected:null};
+
+  function pickDefaultSymbol(symbols){
+    try {
+      const saved = localStorage.getItem("tims-desk-hist-symbol");
+      if (saved && symbols.includes(saved)) return saved;
+    } catch(e){}
+    return symbols[0] || null;
+  }
+
+  function renderHistPills(){
+    const wrap = $("hist-pills"); wrap.replaceChildren();
+    const symbols = Object.keys(histState.series);
+    for (const sym of symbols){
+      const btn = document.createElement("button");
+      btn.className = "pill-btn"; btn.type = "button"; btn.textContent = sym;
+      btn.setAttribute("aria-pressed", String(sym === histState.selected));
+      btn.addEventListener("click", () => {
+        histState.selected = sym;
+        try { localStorage.setItem("tims-desk-hist-symbol", sym); } catch(e){}
+        renderHistPills(); renderHistChart();
+      });
+      wrap.append(btn);
+    }
+  }
+
+  function renderHistChart(){
+    const svg = $("hist-svg"); svg.replaceChildren();
+    const sym = histState.selected;
+    const vals = sym ? histState.series[sym] : null;
+    const dates = histState.dates;
+    const hasData = !!(vals && vals.some(v => v != null));
+    $("hist-empty").hidden = hasData;
+    if (!hasData) { $("hist-stamp").textContent = ""; return; }
+
+    const W = 600, H = 170, padL = 44, padR = 8, padT = 10, padB = 20;
+    const plotW = W - padL - padR, plotH = H - padT - padB;
+    const nums = vals.map((v,i)=>({v,i})).filter(p => p.v != null);
+    if (nums.length < 2) return;
+    const lo = Math.min(...nums.map(p=>p.v)), hi = Math.max(...nums.map(p=>p.v));
+    const span = (hi - lo) || 1;
+    const x = i => padL + (i/(vals.length-1)) * plotW;
+    const y = v => padT + plotH - ((v-lo)/span) * plotH;
+
+    const svgNS = "http://www.w3.org/2000/svg";
+    function el(tag, attrs){ const e = document.createElementNS(svgNS,tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; }
+
+    for (let s=0; s<=3; s++){
+      const v = lo + (s/3) * span;
+      const gy = y(v);
+      svg.append(el("line",{x1:padL,x2:W-padR,y1:gy,y2:gy,class:"hist-grid"}));
+      const lbl = el("text",{x:padL-6,y:gy+3,"text-anchor":"end",class:"hist-axis"});
+      lbl.textContent = v >= 1000 ? Math.round(v).toLocaleString() : v.toFixed(2);
+      svg.append(lbl);
+    }
+
+    const firstI = nums[0].i, lastI = nums.at(-1).i, midI = nums[Math.floor(nums.length/2)].i;
+    [[firstI,"start"],[midI,"middle"],[lastI,"end"]].forEach(([i,anchor]) => {
+      const lbl = el("text",{x:x(i),y:H-4,"text-anchor":anchor,class:"hist-axis"});
+      lbl.textContent = (dates[i] || "").slice(5);
+      svg.append(lbl);
+    });
+
+    const up = nums.at(-1).v >= nums[0].v;
+    const colorVar = up ? "var(--up)" : "var(--down)";
+
+    let d = "";
+    nums.forEach((p,idx) => { d += (idx ? "L" : "M") + x(p.i).toFixed(1) + " " + y(p.v).toFixed(1) + " "; });
+    const areaD = d + `L ${x(nums.at(-1).i).toFixed(1)} ${padT+plotH} L ${x(nums[0].i).toFixed(1)} ${padT+plotH} Z`;
+    svg.append(el("path",{d:areaD, fill:colorVar, class:"hist-area"}));
+    svg.append(el("path",{d, fill:"none", stroke:colorVar, class:"hist-line"}));
+
+    const lastPt = nums.at(-1);
+    svg.append(el("circle",{cx:x(lastPt.i),cy:y(lastPt.v),r:3.5,fill:colorVar,class:"hist-dot"}));
+
+    const crosshair = el("line",{class:"hist-crosshair",y1:padT,y2:padT+plotH});
+    const hoverDot = el("circle",{r:4,class:"hist-dot",stroke:colorVar,fill:"var(--panel)",style:"opacity:0"});
+    svg.append(crosshair, hoverDot);
+    const hit = el("rect",{x:padL,y:padT,width:plotW,height:plotH,class:"hist-hit"});
+    svg.append(hit);
+
+    const tooltip = $("hist-tooltip");
+    function showAt(i){
+      const v = vals[i]; if (v == null) return;
+      const px = x(i), py = y(v);
+      crosshair.setAttribute("x1",px); crosshair.setAttribute("x2",px); crosshair.style.opacity = 1;
+      hoverDot.setAttribute("cx",px); hoverDot.setAttribute("cy",py); hoverDot.style.opacity = 1;
+      const rect = svg.getBoundingClientRect(); const scale = rect.width / W;
+      tooltip.style.left = (px*scale) + "px"; tooltip.style.top = (py*scale) + "px";
+      tooltip.innerHTML = `<b>${dates[i]||""}</b><br>${fmt(v,"")}`;
+      tooltip.style.opacity = 1;
+    }
+    function hide(){ crosshair.style.opacity = 0; hoverDot.style.opacity = 0; tooltip.style.opacity = 0; }
+    hit.addEventListener("mousemove", e => {
+      const rect = svg.getBoundingClientRect();
+      const mx = (e.clientX - rect.left) * (W / rect.width);
+      let idx = 0, best = Infinity;
+      for (let i=0;i<vals.length;i++){ const dd = Math.abs(x(i)-mx); if (dd < best){ best = dd; idx = i; } }
+      showAt(idx);
+    });
+    hit.addEventListener("mouseleave", hide);
+
+    $("hist-stamp").textContent = dates.length ? "through " + dates.at(-1) : "";
+  }
 })();
 </script>
