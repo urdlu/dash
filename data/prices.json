@@ -3,28 +3,28 @@
     "order": 1,
     "symbol": "USD/CAD",
     "name": "US Dollar / Canadian Dollar",
-    "price": 1.4265,
+    "price": 1.4254,
     "currency": "CAD",
-    "change_pct": 0.0491,
+    "change_pct": 0.2109,
     "spark": [
-      1.4236,
       1.422,
       1.4254,
       1.4264,
       1.4212,
       1.4258,
-      1.4265
+      1.4224,
+      1.4254
     ],
-    "as_of": "2026-10-09T19:01:03Z",
+    "as_of": "2026-10-10T00:20:10Z",
     "sample": false
   },
   {
     "order": 2,
     "symbol": "HXS",
     "name": "Global X S&P 500 Index Corporate Class ETF",
-    "price": 115.6,
+    "price": 115.455,
     "currency": "CAD",
-    "change_pct": 1.0401,
+    "change_pct": 0.9134,
     "spark": [
       112.96,
       114.04,
@@ -32,18 +32,18 @@
       115.18,
       115.23,
       114.41,
-      115.6
+      115.455
     ],
-    "as_of": "2026-10-09T19:01:03Z",
+    "as_of": "2026-10-10T00:20:10Z",
     "sample": false
   },
   {
     "order": 3,
     "symbol": "HXT",
     "name": "Global X S&P/TSX 60 Index Corporate Class ETF",
-    "price": 95.31,
+    "price": 95.34,
     "currency": "CAD",
-    "change_pct": 1.4368,
+    "change_pct": 1.4687,
     "spark": [
       93.92,
       94.79,
@@ -51,9 +51,9 @@
       95.25,
       93.72,
       93.96,
-      95.31
+      95.34
     ],
-    "as_of": "2026-10-09T19:01:03Z",
+    "as_of": "2026-10-10T00:20:10Z",
     "sample": false
   },
   {
@@ -72,16 +72,16 @@
       49.47,
       49.69
     ],
-    "as_of": "2026-10-09T19:01:03Z",
+    "as_of": "2026-10-10T00:20:10Z",
     "sample": false
   },
   {
     "order": 5,
     "symbol": "HXCN",
     "name": "Global X S&P/TSX Capped Composite Index Corporate Class ETF",
-    "price": 60.94,
+    "price": 60.99,
     "currency": "CAD",
-    "change_pct": 1.4652,
+    "change_pct": 1.5485,
     "spark": [
       60.05,
       60.64,
@@ -89,18 +89,18 @@
       60.92,
       59.88,
       60.06,
-      60.94
+      60.99
     ],
-    "as_of": "2026-10-09T19:01:03Z",
+    "as_of": "2026-10-10T00:20:10Z",
     "sample": false
   },
   {
     "order": 6,
     "symbol": "HXQ",
     "name": "Global X Nasdaq-100 Index Corporate Class ETF",
-    "price": 126.76,
+    "price": 126.84,
     "currency": "CAD",
-    "change_pct": 0.8192,
+    "change_pct": 0.8828,
     "spark": [
       124.81,
       126.4,
@@ -108,9 +108,9 @@
       127.67,
       127.79,
       125.73,
-      126.76
+      126.84
     ],
-    "as_of": "2026-10-09T19:01:03Z",
+    "as_of": "2026-10-10T00:20:10Z",
     "sample": false
   }
 ]
