@@ -1,11 +1,8 @@
-"""Writes price data to the "Tim's Desk Prices" Google Sheet using a service
-account - no OAuth consent flow, no refresh tokens, no 7-day expiry. The
-service account's key is provided as a JSON string via the
-GOOGLE_SERVICE_ACCOUNT_KEY environment variable (a GitHub Actions secret in
-CI; a local file for manual testing - see README.md).
+"""Thin Google Sheets wrapper for the "Tim's Desk Prices" sheet, authenticated
+as a service account (key JSON in the GOOGLE_SERVICE_ACCOUNT_KEY env var /
+GitHub Actions secret). No OAuth consent flow, no refresh-token expiry.
 
-The target sheet must be shared with the service account's client_email as
-an Editor before this will work.
+The sheet must be shared with the service account's client_email as Editor.
 """
 import json
 import os
@@ -15,69 +12,82 @@ from googleapiclient.discovery import build
 
 SPREADSHEET_ID = "1rKLxaCrsAkvYPAff77JrOjBbfr3ix2CmClVhx7td03c"  # "Tim's Desk Prices"
 SCOPES = ["https://www.googleapis.com/auth/spreadsheets"]
+_DEFAULT_TAB_NAMES = {"Untitled", "Sheet1"}
+_service = None
 
 
-def _get_service():
-    key_json = os.environ["GOOGLE_SERVICE_ACCOUNT_KEY"]
-    info = json.loads(key_json)
-    creds = service_account.Credentials.from_service_account_info(info, scopes=SCOPES)
-    return build("sheets", "v4", credentials=creds)
+def _svc():
+    global _service
+    if _service is None:
+        info = json.loads(os.environ["GOOGLE_SERVICE_ACCOUNT_KEY"])
+        creds = service_account.Credentials.from_service_account_info(info, scopes=SCOPES)
+        _service = build("sheets", "v4", credentials=creds, cache_discovery=False)
+    return _service
+
+
+def col_letter(n: int) -> str:
+    """1 -> A, 26 -> Z, 27 -> AA."""
+    s = ""
+    while n:
+        n, r = divmod(n - 1, 26)
+        s = chr(65 + r) + s
+    return s
+
+
+def get_values(sheet_range: str) -> list[list[str]]:
+    """Formatted values; empty rows come back as [] so row positions are kept."""
+    res = _svc().spreadsheets().values().get(
+        spreadsheetId=SPREADSHEET_ID, range=sheet_range
+    ).execute()
+    return res.get("values", [])
+
+
+def update_range(sheet_range: str, rows: list[list], raw: bool = False):
+    _svc().spreadsheets().values().update(
+        spreadsheetId=SPREADSHEET_ID,
+        range=sheet_range,
+        valueInputOption="RAW" if raw else "USER_ENTERED",
+        body={"values": rows},
+    ).execute()
 
 
 def clear_range(sheet_range: str):
-    service = _get_service()
-    service.spreadsheets().values().clear(
+    _svc().spreadsheets().values().clear(
         spreadsheetId=SPREADSHEET_ID, range=sheet_range, body={}
     ).execute()
 
 
-def update_range(sheet_range: str, rows: list[list]):
-    service = _get_service()
-    body = {"values": rows}
-    service.spreadsheets().values().update(
-        spreadsheetId=SPREADSHEET_ID,
-        range=sheet_range,
-        valueInputOption="USER_ENTERED",
-        body=body,
-    ).execute()
-
-
-_DEFAULT_TAB_NAMES = {"Untitled", "Sheet1"}
-
-
-def ensure_sheet_exists(title: str, rows: int = 500, cols: int = 30):
-    """Make sure a tab named `title` exists. Idempotent, and self-healing for
-    the common first-run case: a brand-new spreadsheet's only tab has
-    Google's default name ("Untitled" for a CSV-uploaded sheet, "Sheet1" for
-    a blank one) rather than the name this pipeline expects - rename it
-    instead of leaving an orphan default tab plus a new empty one."""
-    service = _get_service()
-    meta = service.spreadsheets().get(spreadsheetId=SPREADSHEET_ID).execute()
+def ensure_sheet_exists(title: str, rows: int = 2000, cols: int = 30):
+    """Make sure a tab named `title` exists, with at least rows x cols cells.
+    Idempotent. A lone default-named tab ("Untitled"/"Sheet1") is renamed
+    rather than left as an orphan next to a new empty one."""
+    meta = _svc().spreadsheets().get(spreadsheetId=SPREADSHEET_ID).execute()
     sheets = meta["sheets"]
-    existing = {s["properties"]["title"]: s["properties"]["sheetId"] for s in sheets}
-    if title in existing:
-        return
+    for s in sheets:
+        p = s["properties"]
+        if p["title"] == title:
+            g = p["gridProperties"]
+            if g["rowCount"] < rows or g["columnCount"] < cols:
+                _svc().spreadsheets().batchUpdate(spreadsheetId=SPREADSHEET_ID, body={"requests": [{
+                    "updateSheetProperties": {
+                        "properties": {"sheetId": p["sheetId"], "gridProperties": {
+                            "rowCount": max(rows, g["rowCount"]), "columnCount": max(cols, g["columnCount"])}},
+                        "fields": "gridProperties.rowCount,gridProperties.columnCount",
+                    }}]}).execute()
+            return
+    if len(sheets) == 1 and sheets[0]["properties"]["title"] in _DEFAULT_TAB_NAMES:
+        req = {"updateSheetProperties": {
+            "properties": {"sheetId": sheets[0]["properties"]["sheetId"], "title": title},
+            "fields": "title"}}
+    else:
+        req = {"addSheet": {"properties": {
+            "title": title, "gridProperties": {"rowCount": rows, "columnCount": cols}}}}
+    _svc().spreadsheets().batchUpdate(spreadsheetId=SPREADSHEET_ID, body={"requests": [req]}).execute()
 
-    renameable = [s for s in sheets if s["properties"]["title"] in _DEFAULT_TAB_NAMES]
-    if len(sheets) == 1 and renameable:
-        sheet_id = renameable[0]["properties"]["sheetId"]
-        service.spreadsheets().batchUpdate(
-            spreadsheetId=SPREADSHEET_ID,
-            body={"requests": [{
-                "updateSheetProperties": {
-                    "properties": {"sheetId": sheet_id, "title": title},
-                    "fields": "title",
-                }
-            }]},
-        ).execute()
-        return
 
-    service.spreadsheets().batchUpdate(
-        spreadsheetId=SPREADSHEET_ID,
-        body={"requests": [{
-            "addSheet": {"properties": {
-                "title": title,
-                "gridProperties": {"rowCount": rows, "columnCount": cols},
-            }}
-        }]},
-    ).execute()
+def write_table(title: str, rows: list[list], raw: bool = False):
+    """Replace a machine-owned tab's contents with `rows` (header first)."""
+    width = max(len(r) for r in rows)
+    ensure_sheet_exists(title, rows=len(rows) + 50, cols=max(width, 10))
+    clear_range(f"{title}!A1:ZZ")
+    update_range(f"{title}!A1:{col_letter(width)}{len(rows)}", rows, raw=raw)

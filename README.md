@@ -43,7 +43,7 @@ Actions tab → "Fetch prices" workflow → **Run workflow** (the `workflow_disp
 ## Repo layout
 
 ```
-config/tickers.json      # the watchlist - symbol, display name, currency, data source
+(symbols are read from the sheet's Current tab - add a row there to track something new)
 scripts/fetch_prices.py  # the cron job's entry point
 scripts/sheets_writer.py # thin Sheets API wrapper (service account auth)
 data/prices.json         # latest snapshot, committed each run for history/debugging
