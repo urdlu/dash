@@ -195,12 +195,16 @@ def rnd(v, fx=False):
 
 
 def wide_rows(first_col, index_strs, frame, syms, fx_syms):
-    rows = [[first_col] + syms]
+    """Header + rows, NEWEST FIRST. The Drive connector the dashboard reads
+    through only returns the first ~50 rows of each tab once the sheet is
+    large, so putting recent data on top keeps that slice the useful one.
+    (The dashboard sorts by date itself, so order doesn't matter to it.)"""
+    rows = []
     for key, (_, rec) in zip(index_strs, frame.iterrows()):
         vals = [rnd(rec.get(s), s in fx_syms) for s in syms]
         if any(v != "" for v in vals):
             rows.append([key] + vals)
-    return rows
+    return [[first_col] + syms] + rows[::-1]
 
 
 def market_open_now(now_utc):
@@ -316,7 +320,7 @@ def build(values, mode, now_utc):
                         vals.append(round(ttm_sum(divs[s], anchor) / float(px) * 100, 2))
                 if any(v != "" for v in vals):
                     yrows.append([t.strftime("%Y-%m-%d")] + vals)
-            tabs["Yields"] = yrows
+            tabs["Yields"] = [yrows[0]] + yrows[1:][::-1]  # newest first, see wide_rows
 
     return {"updates": updates, "header_width": len(new_header), "tabs": tabs,
             "snapshot": snapshot, "daily": daily, "have": have}
