@@ -1,3 +1,4 @@
+
 <title>Tim's Desk</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
@@ -136,7 +137,8 @@ td.num{font-family:var(--f-mono)}
   const TZ = "America/Vancouver";
   const $ = id => document.getElementById(id);
   const SHEET_FILE_ID = "1rKLxaCrsAkvYPAff77JrOjBbfr3ix2CmClVhx7td03c";
-  const DRIVE = "Google Drive", READ = "read_file_content";
+  const DRIVE = "Google Drive", READ = "read_file_content", DOWNLOAD = "download_file_content";
+  const ODS = "application/vnd.oasis.opendocument.spreadsheet";
   const RANGES = ["1D","5D","1M","6M","1Y","5Y"];
   const SERIES = ["--s1","--s2","--s3","--s4","--s5","--s6","--s7","--s8"];
   const svgNS = "http://www.w3.org/2000/svg";
@@ -173,6 +175,58 @@ td.num{font-family:var(--f-mono)}
       out[name.toLowerCase()] = lines.slice(3).map(line => {
         const c = splitRow(line), o = {}; header.forEach((h,i)=>{ o[h] = c[i] ?? ""; }); return o;
       });
+    }
+    return out;
+  }
+  // Full-sheet path: download_file_content exports the whole spreadsheet as an
+  // ODS file (a zip). read_file_content only returns ~48 rows per tab, so this is
+  // the primary source; parseTabs above is the fallback. Unzip with the browser's
+  // own DecompressionStream, then walk content.xml. Output has the same shape as
+  // parseTabs: {tabname: [ {header: value} ]}, blank rows kept as all-"" rows.
+  async function unzipEntry(bytes, want){
+    const dv = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    let e = bytes.length - 22; while (e >= 0 && dv.getUint32(e, true) !== 0x06054b50) e--;
+    if (e < 0) throw new Error("not a zip");
+    let p = dv.getUint32(e + 16, true); const n = dv.getUint16(e + 10, true);
+    for (let k = 0; k < n; k++){
+      const method = dv.getUint16(p + 10, true), csize = dv.getUint32(p + 20, true);
+      const nlen = dv.getUint16(p + 28, true), xlen = dv.getUint16(p + 30, true), clen = dv.getUint16(p + 32, true);
+      const name = new TextDecoder().decode(bytes.subarray(p + 46, p + 46 + nlen));
+      const off = dv.getUint32(p + 42, true);
+      if (name === want){
+        const start = off + 30 + dv.getUint16(off + 26, true) + dv.getUint16(off + 28, true);
+        const data = bytes.subarray(start, start + csize);
+        if (method === 0) return new TextDecoder().decode(data);
+        return await new Response(new Blob([data]).stream().pipeThrough(new DecompressionStream("deflate-raw"))).text();
+      }
+      p += 46 + nlen + xlen + clen;
+    }
+    throw new Error(want + " missing");
+  }
+  async function parseOds(b64){
+    const bin = atob(b64), bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    const doc = new DOMParser().parseFromString(await unzipEntry(bytes, "content.xml"), "application/xml");
+    const TNS = "urn:oasis:names:tc:opendocument:xmlns:table:1.0", ONS = "urn:oasis:names:tc:opendocument:xmlns:office:1.0";
+    const out = {};
+    for (const t of doc.getElementsByTagNameNS(TNS, "table")){
+      const grid = [];
+      for (const r of t.getElementsByTagNameNS(TNS, "table-row")){
+        const cells = [];
+        for (const c of r.children){
+          if (c.localName !== "table-cell" && c.localName !== "covered-table-cell") continue;
+          const rep = Math.min(+(c.getAttributeNS(TNS, "number-columns-repeated") || 1), 64);
+          const v = c.getAttributeNS(ONS, "value-type") === "float" ? c.getAttributeNS(ONS, "value")
+            : [...c.children].filter(x => x.localName === "p").map(x => x.textContent).join("\n");
+          for (let k = 0; k < rep; k++) cells.push((v || "").trim());
+        }
+        const rrep = Math.min(+(r.getAttributeNS(TNS, "number-rows-repeated") || 1), 3);
+        for (let k = 0; k < rrep; k++) grid.push(cells);
+      }
+      while (grid.length && !grid[grid.length-1].some(Boolean)) grid.pop();
+      const header = grid.length ? grid[0].slice() : [];
+      while (header.length && !header[header.length-1]) header.pop();
+      out[t.getAttributeNS(TNS, "name").toLowerCase()] = grid.slice(1).map(c => { const o = {}; header.forEach((h,i)=>{ o[h] = c[i] ?? ""; }); return o; });
     }
     return out;
   }
@@ -433,10 +487,11 @@ td.num{font-family:var(--f-mono)}
   let rz = null;
   window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (tabs){ renderView("corp"); renderView("inc"); } }, 150); });
 
-  function onSheet(text, storedAt){
-    tabs = parseTabs(text);
+  let haveFull = false;
+  function onSheet(parsed, storedAt, full){
+    tabs = parsed;
     const asOf = (tabs.current || []).map(r => Date.parse(r.as_of || "")).filter(t=>!isNaN(t));
-    $("src-stamp").textContent = "Prices " + (asOf.length ? "as of " + rel(Math.max(...asOf)) : "loaded") + " · checked " + rel(storedAt);
+    $("src-stamp").textContent = "Prices " + (asOf.length ? "as of " + rel(Math.max(...asOf)) : "loaded") + " · checked " + rel(storedAt) + (full ? "" : " · partial history (fallback read)");
     $("global-fix").replaceChildren();
     renderView("corp"); renderView("inc");
   }
@@ -479,19 +534,40 @@ td.num{font-family:var(--f-mono)}
   $("refresh").addEventListener("click", () => {
     if (!mcpRef) return;
     $("src-stamp").textContent = "Refreshing…";
-    mcpRef.invalidate(DRIVE, READ).catch(()=>{});
+    mcpRef.invalidate(DRIVE).catch(()=>{});
   });
 
   (window.claude?.use ? claude.use("mcp") : Promise.resolve(null)).then(mcp => {
     mcpRef = mcp;
     if (!mcp){ showFix("capability_disabled"); return; }
-    mcp.watchTool(DRIVE, READ, {fileId: SHEET_FILE_ID}, ev => {
-      if (ev.type === "error") return showFix(ev.error && ev.error.code);
-      const text = ev.result && ev.result.payload && ev.result.payload.fileContent;
-      if (!text){ $("src-stamp").textContent = "The sheet came back empty."; return; }
-      onSheet(text, (ev.result.cache && ev.result.cache.storedAt) || Date.now());
+    // Fallback: the ~48-rows-per-tab text view, only started if the full export fails.
+    let fallback = false;
+    function startFallback(){
+      if (fallback) return; fallback = true;
+      mcp.watchTool(DRIVE, READ, {fileId: SHEET_FILE_ID}, ev => {
+        if (haveFull) return;
+        if (ev.type === "error") return showFix(ev.error && ev.error.code);
+        const text = ev.result && ev.result.payload && ev.result.payload.fileContent;
+        if (!text){ $("src-stamp").textContent = "The sheet came back empty."; return; }
+        onSheet(parseTabs(text), (ev.result.cache && ev.result.cache.storedAt) || Date.now(), false);
+      }, {refetchInterval: 5*60*1000});
+    }
+    mcp.watchTool(DRIVE, DOWNLOAD, {fileId: SHEET_FILE_ID, exportMimeType: ODS}, async ev => {
+      if (ev.type === "error"){
+        const code = ev.error && ev.error.code;
+        return FIX[code] ? showFix(code) : startFallback();
+      }
+      const b64 = ev.result && ev.result.payload && ev.result.payload.content;
+      if (!b64) return startFallback();
+      try {
+        const parsed = await parseOds(b64);
+        if (!parsed.current) throw new Error("no Current tab");
+        haveFull = true;
+        onSheet(parsed, (ev.result.cache && ev.result.cache.storedAt) || Date.now(), true);
+      } catch(e){ startFallback(); }
     }, {refetchInterval: 5*60*1000});
   });
 
 })();
 </script>
+

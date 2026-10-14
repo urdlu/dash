@@ -26,7 +26,7 @@ Tim's personal dashboard + investing automation. Goal: **low-cost, fully automat
 
 ---
 
-## The dashboard (artifact v4, published from a Cowork chat)
+## The dashboard (artifact v5)
 
 - Reads the Sheet **"Tim's Desk Prices"** (ID `1rKLxaCrsAkvYPAff77JrOjBbfr3ix2CmClVhx7td03c`) through Tim's claude.ai Google Drive connector (`read_file_content`), refetched every 5 min while open. **No tokens per refresh.**
 - The page parses the connector's markdown-table text client-side (`parseTabs`): one `### Sheet Name: X` section per tab, tab names lower-cased. Fragile by nature (not a stable contract) but accepted.
@@ -35,8 +35,7 @@ Tim's personal dashboard + investing automation. Goal: **low-cost, fully automat
   2. **Income ETFs** — SPYI, QQQI, JEPI, JEPQ, SCHD
 - Each panel: multi-line chart of **% change from the start of the range**, range buttons **1D / 5D / 1M / 6M / 1Y / 5Y**, and a table (Symbol, Name, Last, Day, Period). The income panel adds **Yield (TTM)**, **Dist. yield**, **Yield 1y ago** columns and a **yield-history** chart.
 - Range → source tab: `1D` → `Intraday` (button disabled if the tab is empty); `5Y` → `HistoryWeekly` (falls back to `History`); everything else → `History`. Yield chart + "Yield 1y ago" → `Yields`.
-- The v4 page no longer has the old "Recent Drive files" panel; its capability declaration still lists `list_recent_files` (harmless, could be trimmed on the next publish).
-- Declared capabilities: `mcp: {servers: [{server: "Google Drive", tools: ["list_recent_files", "read_file_content"]}]}`.
+- Declared capabilities (v5): `mcp: {servers: [{server: "Google Drive", tools: ["download_file_content", "read_file_content"]}]}`.
 - Design: Hanken Grotesk + JetBrains Mono, cool blue-grey neutrals, full light/dark themes, 8-colour series palette `--s1…--s8`. New panels (e.g. Portfolio) must match it.
 
 ## The Sheet contract (what the price job must produce)
@@ -64,7 +63,7 @@ Schedule: weekdays after the close, plus once before 6am PT. Cron is UTC — han
 - Crons (UTC): `15 21 * * 1-5` full after close; `0 3,8 * * 2-6` overnight full backups (before 6am PT in both PDT/PST, survives GitHub's late firing); no intraday cron (Tim: daily is enough). Full runs still fill the Intraday tab with the last session's 5-min bars. `concurrency: prices`. `workflow_dispatch` input `mode` = full|intraday.
 - Auth: Google Cloud **service account** `tims-desk-price-writer@solid-linker-505403-j8.iam.gserviceaccount.com` (Editor on the Sheet), key in secret `GOOGLE_SERVICE_ACCOUNT_KEY`. No OAuth, no token expiry.
 - **GitHub's scheduled runs fire hours late** (observed 1–6 h); the overnight backups cover that.
-- **Connector truncation:** `read_file_content` returns only ~48 data rows per tab (and cuts cells at ~52 chars). Newest-first ordering means the dashboard gets the latest ~48 rows (History ≈ 2 months, HistoryWeekly/Yields ≈ 11 months, Intraday ≈ last 4 h). `download_file_content` with `exportMimeType: application/vnd.oasis.opendocument.spreadsheet` returns **every tab in full** (~58 KB ODS zip, base64) — the planned fix is for the dashboard to read that instead (parse client-side).
+- **Connector truncation:** `read_file_content` returns only ~48 data rows per tab (and cuts cells at ~52 chars). Newest-first ordering means the dashboard gets the latest ~48 rows (History ≈ 2 months, HistoryWeekly/Yields ≈ 11 months, Intraday ≈ last 4 h). `download_file_content` with `exportMimeType: application/vnd.oasis.opendocument.spreadsheet` returns **every tab in full** (~58 KB ODS zip, base64) — **the dashboard (v5, 2026-10-13) reads that**: it unzips the ODS with the browser's `DecompressionStream` and walks `content.xml` (`parseOds`), falling back to `read_file_content` + `parseTabs` only if the export fails (stamp then says "partial history").
 - `data/prices.json`, `data/history/*.json` are committed by full runs (debug record; the dashboard doesn't read them). `morning_push.py` still reads the deleted `config/tickers.json` — switch it to `data/prices.json` in STEP 4.
 
 ### Morning push (built 2026-10-12, not yet live)
@@ -86,7 +85,7 @@ Schedule: weekdays after the close, plus once before 6am PT. Cron is UTC — han
 
 **STEP 0 — orient** (this file, v4 saved to `reference/tim-desk.html`). ✅ 2026-10-13.
 
-**STEP 1 — price job matches the Sheet contract exactly.** Read symbols + groups from Current (preserve blank rows / `group` column); fill name/price/currency/change_pct/as_of/sample; income yields; History (~1y daily), HistoryWeekly (5y weekly), Intraday (today, 5-min), Yields (weekly TTM %, 5y). DST-proof schedule incl. a reliable pre-6am-PT run. Run once, read the Sheet back, show Tim a sample of each tab. ✅ 2026-10-13 (open: dashboard reads via ODS export to beat the ~48-row truncation — awaiting Tim's go).
+**STEP 1 — price job matches the Sheet contract exactly.** Read symbols + groups from Current (preserve blank rows / `group` column); fill name/price/currency/change_pct/as_of/sample; income yields; History (~1y daily), HistoryWeekly (5y weekly), Intraday (today, 5-min), Yields (weekly TTM %, 5y). DST-proof schedule incl. a reliable pre-6am-PT run. Run once, read the Sheet back, show Tim a sample of each tab. ✅ 2026-10-13 Dashboard v5 reads the full ODS export.
 
 **STEP 2 — IBKR read-only via Flex Web Service** (not the live API). Activity Flex Query (Open Positions, Trades, Cash Report, Change in NAV; XML; Last Business Day) + Trade Confirmation Flex Query. Secrets (Tim sets them): `IBKR_FLEX_TOKEN`, `IBKR_FLEX_ACTIVITY_ID`, `IBKR_FLEX_TRADES_ID`. Job: `SendRequest` → poll `GetStatement` with backoff → parse XML → write **Positions** and **Trades** tabs to the same Sheet. Then a **Portfolio** panel (holdings, value, day change, recent trades) matching the design. Remind Tim **2 weeks before the token expires** (1-year life). Live API (IB Gateway + IBC + ib_async on a VPS) only if Tim asks later.
 
