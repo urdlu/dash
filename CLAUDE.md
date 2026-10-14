@@ -1,102 +1,99 @@
 # Tim's Desk
 
-A personal dashboard project, moved out of a Claude chat and into a real repo so it can grow into an actual app.
+Tim's personal dashboard + investing automation. Goal: **low-cost, fully automated, works with the laptop off.**
 
 ## Who this is for
 
-- Tim, based in British Columbia (timezone `America/Vancouver`). A self-directed investor who builds his own tools.
-- Overall goal: a **low-cost, highly automated** personal assistant and investing toolkit.
-- Prefers step-by-step technical guidance and direct answers.
-- Uses Wealthsimple as his broker. He already has a Flask "Income Screener" app that reads Wealthsimple through SnapTrade (read-only). It screens covered calls and cash-secured puts and ranks them by annualized premium yield. It builds OCC option symbols in code because the SnapTrade SDK has no full option-chain endpoint.
-- Also interested in crypto (BTC cycle analysis, on-chain indicators).
+- Tim, British Columbia, timezone `America/Vancouver` (Pacific; switches PDT UTC−7 ↔ PST UTC−8).
+- Self-directed investor who builds his own tools. Prefers step-by-step guidance and direct answers.
+- Brokers: **Wealthsimple** (trade-confirmation emails → Gmail sync) and **IBKR** (read-only via Flex Web Service, STEP 2).
+- Has a separate Flask "Income Screener" (SnapTrade, read-only; ranks covered calls / CSPs by annualized premium yield). Location still TBD.
 
-## What Tim wants
+## Hard rules
 
-1. **A live dashboard** he can open on any device, including his phone.
-2. **Plots of a list of stocks he tracks:** price history charts, not just current quotes.
-3. **A morning phone notification with trade suggestions** that arrives before he wakes up and works with his laptop off.
-4. **Room to grow:** more panels, and data from his other tools (Income Screener, Wealthsimple transactions).
+- **Laptop can be off.** Every scheduled job runs in the cloud: GitHub Actions or Google Apps Script.
+- **Don't run deterministic jobs through Claude/any LLM.** Fetching prices, parsing emails, computing signals, sending pushes = plain code on free schedulers. An LLM call is OK only where it adds judgment (e.g. a short morning summary): one small API call per day, never an agent session.
+- **Keep it private.** Repo `github.com/urdlu/dash` stays private. Dashboard is a private claude.ai artifact.
+- **Never commit secrets.** They live in GitHub Actions secrets / Apps Script Properties only. Never ask Tim to paste a token in chat; never log one.
+- **Suggestions, not advice.** Anything trade-related is labelled as a suggestion for Tim to evaluate. **No automated order placement, ever.**
 
-## Hard constraints
+## How to work with Tim
 
-- **The laptop can be off.** Every scheduled job has to run in the cloud.
-- **Keep costs low.** Deterministic jobs (fetching prices, parsing emails, computing signals, sending pushes) must **not** run through Claude or any other LLM on each run. Use free schedulers. An LLM call is fine only where it adds judgment, such as a short written morning summary, and it should be one small API call per day, not an agent session.
-- **Keep it private.** The dashboard will show portfolio and trade data, so it must not be on a public URL.
-- **Never commit secrets.** API keys and OAuth tokens go in the platform's secret store (e.g. GitHub Actions secrets), never in the repo.
-
----
-
-## What exists today
-
-### 1. Dashboard: "Tim's Desk" (a claude.ai artifact) — Phase 1 complete
-
-- URL: https://claude.ai/artifact/HUWMhdji1szrsFyCkpsfUz (private to Tim)
-- Source: `reference/tim-desk.html`. It's a single HTML file that runs inside claude.ai's artifact viewer.
-- **Panel 1, Google Drive activity (live):** lists recently changed Drive files and counts how many changed today and in the last 7 days. Calls the Google Drive connector's `list_recent_files` directly from the page, refreshed every 5 minutes while open. No tokens.
-- **Panel 2, Market watchlist:** reads the "Current" tab of the **"Tim's Desk Prices"** Google Sheet (ID `1rKLxaCrsAkvYPAff77JrOjBbfr3ix2CmClVhx7td03c`) via the Drive connector's `read_file_content`, same free mechanism as Panel 1 — **not** the artifact's own database anymore (that `db` capability was dropped). Row shape: `{order, symbol, name, price, currency, change_pct, spark[≤7], as_of (ISO UTC), sample (bool)}`.
-- **Panel 3, Price history (new):** a 90-day line chart per symbol, with pill buttons to switch tickers and a hover tooltip. Reads the same Sheet's "History" tab (wide format: `date, <symbol1>, <symbol2>, ...`).
-- Both Panel 2 and 3 parse the connector's markdown-table text response client-side (see `parseSheetTables` in the script) — a real but accepted fragility, since that format isn't a stable contract.
-- Capabilities declared: `mcp: {servers: [{server: "Google Drive", tools: ["list_recent_files", "read_file_content"]}]}`. No `db`.
-- Design: Hanken Grotesk + JetBrains Mono, cool blue-grey neutrals, full light/dark themes, a wrapping grid that stacks on phones.
-- Watchlist tickers (decided, replacing the XEQT/VFV placeholders): USD/CAD + the 5 largest Global X Corporate Class ETFs by AUM — HXS, HXT, HBB, HXCN, HXQ. Crypto (BTC/ETH/SOL) was explicitly dropped for now; the CoinGecko fetch path stays in `scripts/fetch_prices.py` (with 429 retry/backoff) for if it's reintroduced later.
-
-### 2. Scheduled task: "Tim's Desk quote refresh" (claude.ai cloud) — disabled
-
-- ID `trig_01MvnswauVTcGWsfV8LPEv5C`. Used to run at 6:50am/1:50pm PT, starting a Claude session that web-searched quotes and wrote them to the artifact's `db`. **Disabled** (2026-10-02) now that the GitHub Actions pipeline below replaced it — no more per-run token cost, no more unreliable TSX quotes.
-
-### Price fetch pipeline (GitHub Actions, free) — Phase 1 complete
-
-- Repo: `github.com/urdlu/dash` (private). `gh` CLI is set up and authenticated as `urdlu` for repo management (creating things, triggering runs, reading logs) — but never for touching secrets; that stays manual.
-- `.github/workflows/fetch-prices.yml`: cron (6:50am/1:50pm PT, i.e. 13:50/20:50 UTC during PDT — adjust by 1 hour for PST, roughly Nov–Mar) + `workflow_dispatch` for manual runs. Needs `permissions: contents: write` for its own data-commit step (a real bug hit and fixed: the default `GITHUB_TOKEN` is read-only).
-- `scripts/fetch_prices.py`: `yfinance` for the ETFs/FX, CoinGecko (unused while crypto is off) for crypto, writes `data/prices.json` + `data/history/*.json` locally (committed each run) and pushes both to the Sheet's Current/History tabs.
-- `scripts/sheets_writer.py`: writes via a **Google Cloud service account** (project `solid-linker-505403-j8`, the same "WS Trades" project as the WS sync below) — not user OAuth, so no 7-day testing-token expiry. The service account's key lives only in the `GOOGLE_SERVICE_ACCOUNT_KEY` GitHub Actions secret, never in the repo. `ensure_sheet_exists` self-heals a sheet's default tab name (Google names a CSV-uploaded sheet's first tab "Untitled" — the pipeline expects "Current"/"History") by renaming rather than leaving orphan tabs. Every write clears the target range first, so a shrinking ticker list doesn't leave stale rows behind (both were real bugs, found and fixed via actual live test runs, not assumed).
-
-### 3. Wealthsimple transaction sync (a Claude desktop app scheduled task, on the laptop)
-
-- A Python pipeline (`ws_sync.py`, `ws_parser.py`, `gmail_client.py`, `sheets_client.py`), archived here under `legacy/ws-sync/` for reference. OAuth client ID/secret were scrubbed from these copies (see each file's header comment) — real values live only in the original session, never in this repo.
-- It checks the Gmail inbox `wstradesws@gmail.com` (Wealthsimple trade confirmations forwarded from Tim's main address) and parses new emails. It then appends rows to the "Untitled" tab of the Google Sheet **"WS Transactions Log"** (ID `15JYrY5pq1D9Xe6wbL-f3G5GOn_0ggNeaqR1uCBic8Kw`). It's idempotent, using `sync_state.json` to track processed message IDs.
-- Problems: it needs the laptop on, it spends Claude tokens just to run a script, and its OAuth refresh token keeps dying (`invalid_grant`). That last one is very likely because the Google Cloud app is unverified and in "Testing" mode, where refresh tokens expire after 7 days.
-- **Recommendation:** port it to **Google Apps Script** with a time-driven trigger. That's free, runs in Google's cloud, has native Gmail and Sheets access with no refresh tokens, and can store processed IDs in the Sheet or in Script Properties. Keep `ws_parser.py`'s parsing rules exactly the same. Then turn off the desktop task.
-
-### Things already tried
-
-- Fetching prices from the CoinGecko public API with Claude's web-fetch tool was blocked by robots.txt. That doesn't apply to normal code, which can call the CoinGecko API directly.
+- Step-by-step. **Stop after each STEP**, show what changed and exactly what Tim must do (secrets, approvals, clicks), then wait.
+- **Publishing the dashboard:** always publish to the same artifact link, https://claude.ai/artifact/HUWMhdji1szrsFyCkpsfUz, and **pull the latest live version first** (`Artifact read` without `path` to register it, plus `path: "index.html"` for a byte-exact copy). Other chats (Cowork) also publish to it — never overwrite it from an older local copy.
+- `reference/tim-desk.html` is the repo's copy of the live page (the page content as authored, without the platform's `<!doctype…><body>` wrapper). Re-sync it from the live artifact before editing.
+- `gh` CLI is installed (`C:\Program Files\GitHub CLI\gh.exe`, may not be on PATH) and authenticated as `urdlu`: use it for repo work, triggering runs, reading logs. **Never** use it to set or read secrets — Tim does that himself.
 
 ---
 
-## Architecture actually used (Phase 1)
+## The dashboard (artifact v4, published from a Cowork chat)
 
-Tim chose to **keep the claude.ai artifact as the front end** rather than build a self-hosted site — simpler, and it keeps the free live Drive panel. So the shape is:
+- Reads the Sheet **"Tim's Desk Prices"** (ID `1rKLxaCrsAkvYPAff77JrOjBbfr3ix2CmClVhx7td03c`) through Tim's claude.ai Google Drive connector (`read_file_content`), refetched every 5 min while open. **No tokens per refresh.**
+- The page parses the connector's markdown-table text client-side (`parseTabs`): one `### Sheet Name: X` section per tab, tab names lower-cased. Fragile by nature (not a stable contract) but accepted.
+- **Two panels, one per group** on the Current tab:
+  1. **Corporate class ETFs** — HXS, HXT, HBB, HXCN, HXQ
+  2. **Income ETFs** — SPYI, QQQI, JEPI, JEPQ, SCHD
+- Each panel: multi-line chart of **% change from the start of the range**, range buttons **1D / 5D / 1M / 6M / 1Y / 5Y**, and a table (Symbol, Name, Last, Day, Period). The income panel adds **Yield (TTM)**, **Dist. yield**, **Yield 1y ago** columns and a **yield-history** chart.
+- Range → source tab: `1D` → `Intraday` (button disabled if the tab is empty); `5Y` → `HistoryWeekly` (falls back to `History`); everything else → `History`. Yield chart + "Yield 1y ago" → `Yields`.
+- The v4 page no longer has the old "Recent Drive files" panel; its capability declaration still lists `list_recent_files` (harmless, could be trimmed on the next publish).
+- Declared capabilities: `mcp: {servers: [{server: "Google Drive", tools: ["list_recent_files", "read_file_content"]}]}`.
+- Design: Hanken Grotesk + JetBrains Mono, cool blue-grey neutrals, full light/dark themes, 8-colour series palette `--s1…--s8`. New panels (e.g. Portfolio) must match it.
 
-```
-GitHub Actions (cron, free)
-  └─ scripts/fetch_prices.py (yfinance, service-account Sheets write)
-       writes → "Tim's Desk Prices" Google Sheet (Current + History tabs)
-                       │
-                       ▼
-     claude.ai artifact "Tim's Desk" reads the Sheet via the
-     Drive connector's read_file_content, free, every 5 min while open
-```
+## The Sheet contract (what the price job must produce)
 
-No Cloudflare Pages, no self-hosted site, no static JSON site build — the Sheet *is* the data layer, and the artifact already has free read access to it through the connector the Drive panel was already using. `data/*.json` in this repo is still written and committed each run (useful local record / debugging), but the artifact doesn't read it directly.
+**Current** tab — columns `order, symbol, name, price, currency, change_pct, spark, as_of, sample` (+ income-only `yield_ttm, yield_dist`).
+- **Groups are separated by a BLANK ROW.** An optional `group` column overrides blank-row grouping. Preserve the blank rows.
+- **Symbols are read FROM this tab — never hard-coded.** Anything Tim adds gets picked up automatically.
+- Every symbol: `name`, `price`, `currency` (income ETFs are US-listed → `USD`; TSX ones → `CAD`), `change_pct`, `as_of` (ISO UTC), `sample=FALSE`.
+- Income group only: `yield_ttm` = sum of last 12 months of distributions ÷ price, in %; `yield_dist` = latest distribution × payments/year ÷ price, in %.
+- Data source: `yfinance`. TSX tickers need `.TO` when fetching; the Sheet keeps the plain symbol.
 
-Points still worth keeping in mind for later phases:
+**History** — `date` (YYYY-MM-DD), then one column per symbol (both groups). Daily closes, ~1 year. Keep it to ~1 year so the Drive connector returns it in full; if it starts truncating, tell Tim.
+**HistoryWeekly** — same layout, weekly closes, 5 years (used by the 5Y button).
+**Intraday** — `time` (ISO), then one column per symbol; today's 5-minute prices (turns on the 1D button).
+**Yields** — `date`, then one column per income ETF; weekly TTM yield %, up to 5 years, from distribution history.
 
-- **Scheduler:** GitHub Actions cron is free for private repos within the monthly minutes. Cron times are UTC; Pacific time shifts between UTC−7 (PDT) and UTC−8 (PST) — the workflow file has a comment on this, not yet handled automatically.
-- **Phone push (Phase 2):** ntfy.sh — decided. Free, topic-based HTTP POST; the topic name must stay unguessable since there's no auth.
-- **Trade suggestions (Phase 2+):** start with rules and no LLM. Examples: Income Screener-style premium-yield ranking, moves beyond X%, distance from the 50/200-day averages, RSI. Optionally one small Claude API call for a 3-line morning summary. Label everything as suggestions for Tim to evaluate, not advice.
-- **WS transactions (Phase 3):** still planned — port `legacy/ws-sync/` to Google Apps Script (free, no OAuth refresh tokens, same trick the price pipeline uses here but even simpler since Apps Script runs natively inside Google).
+Schedule: weekdays after the close, plus once before 6am PT. Cron is UTC — handle PST/PDT (the two-cron + offset-check trick used by `morning-push.yml` works). Intraday every ~30 min in market hours only if it stays within free limits; otherwise tell Tim the trade-off.
 
-## Phased plan
+---
 
-1. ~~**Phase 1 — data + plots.**~~ **Done (2026-10-02).** Repo set up, GitHub Actions fetching prices for USD/CAD + HXS/HXT/HBB/HXCN/HXQ, Sheet-backed watchlist and price-history panels live on the artifact, old quote-refresh task disabled.
-2. **Phase 2 — morning push:** a job at **5:55am PT, weekdays only** (decided) that computes signals and sends an **ntfy.sh** (decided) notification linking to the dashboard.
-3. **Phase 3 — WS transactions:** port the sync to Apps Script, retire the desktop task, and add a "Recent trades" panel.
-4. **Phase 4 — Income Screener signals:** feed the screener's covered call and CSP rankings into the morning push and a dashboard panel. SnapTrade credentials go in secrets.
+## What exists in the repo
 
-## Open questions to ask Tim
+### Price job (GitHub Actions) — needs STEP 1 rewrite
+- `.github/workflows/fetch-prices.yml` → `scripts/fetch_prices.py` + `scripts/sheets_writer.py`. Cron `50 13,20 * * *` UTC (6:50am/1:50pm PDT; drifts 1 h in PST). `workflow_dispatch` for manual runs; `permissions: contents: write` for its data-commit step.
+- Auth: Google Cloud **service account** `tims-desk-price-writer@solid-linker-505403-j8.iam.gserviceaccount.com` (Editor on the Sheet), key in secret `GOOGLE_SERVICE_ACCOUNT_KEY`. No OAuth, no token expiry.
+- **Known problems (as of 2026-10-13):**
+  - Symbols are hard-coded in `config/tickers.json` (USD/CAD + 5 corp ETFs). It `clear_range("Current!A1:Z1000")` then rewrites — **this destroys the blank-row grouping and the income rows Tim added by hand.**
+  - Only writes Current + History (90 days). No HistoryWeekly / Intraday / Yields, no yield columns.
+  - **GitHub's scheduled runs fire hours late**: the 13:50 UTC slot has been running ~18:00–20:00 UTC, the 20:50 slot ~22:00–00:20 UTC. A "before 6am PT" run can't rely on a single on-time cron.
+- `data/prices.json`, `data/history/*.json` are committed by each run (debug record; the dashboard doesn't read them).
+- CoinGecko fetch path (with 429 backoff) kept for if crypto returns; crypto is off for now.
 
-Answered: tickers (USD/CAD + HXS/HXT/HBB/HXCN/HXQ by AUM, crypto dropped for now), push channel (ntfy.sh), hosting (keep the claude.ai artifact), push timing (5:55am PT weekdays).
+### Morning push (built 2026-10-12, not yet live)
+- `scripts/morning_push.py` (stdlib only, no LLM) + `morning-push.yml` at repo root (**move to `.github/workflows/`**). Two UTC crons (12:55 / 13:55 weekdays); the script keeps only the one matching today's Vancouver offset → 5:55am PT year-round. Signals: 1-day move (≥1.5%, FX ≥0.5%), RSI(14) ≤30/≥70, 50-day SMA crossings, within 1% of 90-day high/low, stale-data warning (>40 h). Needs secret `NTFY_TOPIC`. Channel: ntfy.sh (decided earlier; STEP 4 says confirm with Tim).
+- Built against the old 6-symbol Current tab — re-check it against the v4 Sheet contract before turning on.
 
-Still open:
-1. Where the Income Screener code lives, and whether it should move into this repo or stay separate (relevant once Phase 4 starts).
+### Wealthsimple email sync
+- **Old:** Python (`legacy/ws-sync/`, secrets scrubbed) running as a Claude desktop scheduled task on the laptop; Gmail `wstradesws@gmail.com` → Sheet **"WS Transactions Log"** (ID `15JYrY5pq1D9Xe6wbL-f3G5GOn_0ggNeaqR1uCBic8Kw`), "Untitled" tab. Needs the laptop, burns tokens, OAuth app was in Testing mode (7-day tokens; it was later published to Production, but the desktop-task problems remain).
+- **New (built 2026-10-12, not yet deployed):** `apps-script/ws-sync/` — Apps Script port, parity-tested against the Python (`test/parity_test.py`, 18/18 identical). Hourly time-driven trigger in wstradesws@gmail.com; state in hidden `_ws_sync_state` tab; first run de-dupes against existing log rows. Optional ntfy on new trades via Script Property `NTFY_TOPIC`. Parsing rules must stay identical to `ws_parser.py` (incl. multi-leg "Options strategy:" fills).
+- After the Apps Script version is live and verified, Tim turns off the desktop task.
+
+### Other cloud tasks
+- "Tim's Desk quote refresh" (`trig_01MvnswauVTcGWsfV8LPEv5C`) — **disabled** 2026-10-02 (replaced by the price job).
+- "Claude Queue runner" (`trig_01VDvmdhS7q5u9SVpmK8aYgS`, 7:08am PT daily) + artifact https://claude.ai/artifact/E4sZHcSDYkNKCb2MhvXTHx (db collection `queue`) — judgment work only (read/research/draft); exits immediately when the queue is empty. Never trades or sends anything.
+
+---
+
+## Plan
+
+**STEP 0 — orient** (this file, v4 saved to `reference/tim-desk.html`). ✅ 2026-10-13.
+
+**STEP 1 — price job matches the Sheet contract exactly.** Read symbols + groups from Current (preserve blank rows / `group` column); fill name/price/currency/change_pct/as_of/sample; income yields; History (~1y daily), HistoryWeekly (5y weekly), Intraday (today, 5-min), Yields (weekly TTM %, 5y). DST-proof schedule incl. a reliable pre-6am-PT run. Run once, read the Sheet back, show Tim a sample of each tab.
+
+**STEP 2 — IBKR read-only via Flex Web Service** (not the live API). Activity Flex Query (Open Positions, Trades, Cash Report, Change in NAV; XML; Last Business Day) + Trade Confirmation Flex Query. Secrets (Tim sets them): `IBKR_FLEX_TOKEN`, `IBKR_FLEX_ACTIVITY_ID`, `IBKR_FLEX_TRADES_ID`. Job: `SendRequest` → poll `GetStatement` with backoff → parse XML → write **Positions** and **Trades** tabs to the same Sheet. Then a **Portfolio** panel (holdings, value, day change, recent trades) matching the design. Remind Tim **2 weeks before the token expires** (1-year life). Live API (IB Gateway + IBC + ib_async on a VPS) only if Tim asks later.
+
+**STEP 3 — WS sync off the laptop.** Deploy the Apps Script port (already built, see above); Tim provides/approves; then he disables the desktop task.
+
+**STEP 4 — morning phone push** before 6am PT with rule-based suggestions (labelled as suggestions). Ask Tim which channel (ntfy / Pushover / Telegram) — ntfy.sh was chosen earlier and `morning_push.py` already targets it.
+
+Still open: where the Income Screener code lives / whether it joins this repo.

@@ -1,82 +1,85 @@
-<meta charset="utf-8">
 <title>Tim's Desk</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: a morning desk blotter — header strip, panels in a wrapping grid, stacking on phones */
+/* Layout: a morning desk blotter — header strip, then one full-width panel per holding group (chart over its table) */
 :root{
-  --bg:#eef1f4; --panel:#ffffff; --ink:#15202b; --muted:#5b6876; --line:#d6dde4;
+  --bg:#eef1f4; --panel:#ffffff; --ink:#15202b; --muted:#5b6876; --line:#d6dde4; --zero:#9aa6b2;
   --accent:#2c5f7c; --accent-soft:#e1ecf2;
   --up:#1d7a4d; --down:#b3402f; --warn-bg:#fff3d6; --warn-ink:#7a5300;
+  --s1:#2a78d6; --s2:#eb6834; --s3:#1baf7a; --s4:#eda100; --s5:#e87ba4; --s6:#008300; --s7:#6250d6; --s8:#e34948;
   --f-display:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-body:"Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif;
   --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
-  --bg:#0f151b; --panel:#17202a; --ink:#e4eaf0; --muted:#8d9aa8; --line:#26323f;
-  --accent:#7fb4d3; --accent-soft:#1c2e3b; --up:#58c08b; --down:#ec7a66; --warn-bg:#3a2e12; --warn-ink:#f2cf7a; color-scheme:dark}}
+  --bg:#0f151b; --panel:#17202a; --ink:#e4eaf0; --muted:#8d9aa8; --line:#26323f; --zero:#55636f;
+  --accent:#7fb4d3; --accent-soft:#1c2e3b; --up:#58c08b; --down:#ec7a66; --warn-bg:#3a2e12; --warn-ink:#f2cf7a;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0f151b; --panel:#17202a; --ink:#e4eaf0; --muted:#8d9aa8; --line:#26323f;
-  --accent:#7fb4d3; --accent-soft:#1c2e3b; --up:#58c08b; --down:#ec7a66; --warn-bg:#3a2e12; --warn-ink:#f2cf7a; color-scheme:dark}
+  --bg:#0f151b; --panel:#17202a; --ink:#e4eaf0; --muted:#8d9aa8; --line:#26323f; --zero:#55636f;
+  --accent:#7fb4d3; --accent-soft:#1c2e3b; --up:#58c08b; --down:#ec7a66; --warn-bg:#3a2e12; --warn-ink:#f2cf7a;
+  --s1:#3987e5; --s2:#d95926; --s3:#199e70; --s4:#c98500; --s5:#d55181; --s6:#008300; --s7:#9085e9; --s8:#e66767; color-scheme:dark}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.45}
 .wrap{max-width:1120px;margin:0 auto;padding-inline:16px;padding-block:24px 40px;display:grid;gap:20px}
 header{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px 20px}
-h1{font-family:var(--f-display);font-weight:700;font-size:1.75rem;letter-spacing:-.01em;margin:0;text-wrap:balance}
+h1{font-family:var(--f-display);font-weight:700;font-size:1.75rem;letter-spacing:-.01em;margin:0}
 .clock{font-family:var(--f-mono);color:var(--muted);font-size:.9rem;font-variant-numeric:tabular-nums}
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:20px;align-items:start}
-section.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;min-width:0;display:grid}
-.ph{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:16px 18px 12px;border-bottom:1px solid var(--line)}
-.ph h2{margin:0;font-family:var(--f-display);font-size:1.05rem;font-weight:600}
-.eyebrow{display:block;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
-.meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.pill{font-size:.72rem;font-weight:600;padding:3px 8px;border-radius:999px;letter-spacing:.02em;white-space:nowrap}
-.pill.live{background:var(--accent-soft);color:var(--accent)}
-.pill.live::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:currentColor;margin-right:6px;vertical-align:1px}
-.pill.sample{background:var(--warn-bg);color:var(--warn-ink)}
-.pill.err{background:var(--warn-bg);color:var(--warn-ink)}
-.stamp{font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
+.sub{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-size:.8rem;color:var(--muted)}
+.sub a{color:var(--accent)}
 button.ref{font:inherit;font-size:.78rem;border:1px solid var(--line);background:transparent;color:var(--ink);border-radius:6px;padding:3px 9px;cursor:pointer}
 button.ref:hover{border-color:var(--accent);color:var(--accent)}
-button.ref:focus-visible,a:focus-visible,.pill-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-.summary{display:flex;gap:28px;flex-wrap:wrap;padding:14px 18px;border-bottom:1px solid var(--line)}
-.stat b{display:block;font-family:var(--f-mono);font-size:1.4rem;font-weight:500;font-variant-numeric:tabular-nums}
-.stat span{font-size:.75rem;color:var(--muted)}
-ul.rows{list-style:none;margin:0;padding:4px 0}
-.rows li{display:grid;grid-template-columns:auto 1fr auto;gap:12px;align-items:center;padding:9px 18px;min-width:0}
-.rows li+li{border-top:1px solid var(--line)}
-.type{font-family:var(--f-mono);font-size:.68rem;font-weight:500;width:44px;text-align:center;padding:3px 0;border-radius:4px;background:var(--accent-soft);color:var(--accent)}
-.fname{min-width:0}
-.fname a{color:var(--ink);text-decoration:none;font-weight:500;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.fname a:hover{color:var(--accent);text-decoration:underline}
-.fname small{color:var(--muted);font-size:.75rem}
-.when{font-family:var(--f-mono);font-size:.75rem;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
-.tick li{grid-template-columns:minmax(0,1fr) 84px auto}
-.sym b{font-family:var(--f-mono);font-weight:500}
-.sym small{display:block;color:var(--muted);font-size:.75rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.px{text-align:right;font-family:var(--f-mono);font-variant-numeric:tabular-nums}
-.px small{display:block;font-size:.75rem}
-.upc{color:var(--up)} .dnc{color:var(--down)}
-svg.spark{width:84px;height:28px;display:block}
-.empty{padding:28px 18px;color:var(--muted);font-size:.9rem}
-.note{padding:10px 18px 14px;font-size:.78rem;color:var(--muted);border-top:1px solid var(--line)}
-.skel{height:14px;border-radius:4px;background:var(--line);opacity:.6}
-@media (prefers-reduced-motion:no-preference){.skel{animation:p 1.4s ease-in-out infinite}@keyframes p{50%{opacity:.25}}}
+:is(button,a):focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 
-/* Panel 3: price history chart */
-.pills{display:flex;gap:6px;flex-wrap:wrap;padding:12px 18px 0}
-.pill-btn{font:inherit;font-size:.76rem;font-family:var(--f-mono);border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:4px 11px;cursor:pointer}
-.pill-btn:hover{border-color:var(--accent);color:var(--accent)}
-.pill-btn[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);border-color:transparent;font-weight:600}
-.chart-wrap{position:relative;padding:12px 18px 4px}
-svg.hist{width:100%;height:170px;display:block;overflow:visible}
-.hist-grid{stroke:var(--line);stroke-width:1}
-.hist-axis{fill:var(--muted);font-size:10px;font-family:var(--f-mono)}
-.hist-line{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-.hist-area{opacity:.12}
-.hist-crosshair{stroke:var(--muted);stroke-width:1;stroke-dasharray:2 3;opacity:0;pointer-events:none}
-.hist-dot{stroke:var(--panel);stroke-width:2}
-.hist-hit{fill:transparent;cursor:crosshair}
-.tooltip{position:absolute;pointer-events:none;background:var(--ink);color:var(--panel);font-size:11.5px;line-height:1.4;padding:6px 9px;border-radius:6px;opacity:0;transform:translate(-50%,calc(-100% - 8px));white-space:nowrap;font-family:var(--f-mono);transition:opacity .08s ease;z-index:2}
+section.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;min-width:0;display:grid}
+.ph{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:10px 16px;padding:16px 18px 12px;border-bottom:1px solid var(--line)}
+.ph h2{margin:0;font-family:var(--f-display);font-size:1.15rem;font-weight:600}
+.eyebrow{display:block;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.ranges{display:flex;gap:4px;flex-wrap:wrap}
+.ranges button{font:inherit;font-family:var(--f-mono);font-size:.76rem;min-width:40px;padding:5px 8px;border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:6px;cursor:pointer}
+.ranges button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.ranges button[aria-pressed="true"]{background:var(--accent-soft);color:var(--accent);border-color:transparent;font-weight:600}
+.ranges button:disabled{opacity:.4;cursor:not-allowed}
+.stamp{font-family:var(--f-mono);font-size:.72rem;color:var(--muted)}
+
+.chart-head{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 12px;padding:12px 18px 0;font-size:.78rem;color:var(--muted)}
+.chart-wrap{position:relative;padding:6px 18px 8px}
+svg.chart{width:100%;height:auto;display:block;overflow:visible;touch-action:pan-y}
+.grid-l{stroke:var(--line);stroke-width:1}
+.zero-l{stroke:var(--zero);stroke-width:1}
+.axis{fill:var(--muted);font-size:11px;font-family:var(--f-mono)}
+.line{fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.endlbl{font-size:11px;font-family:var(--f-mono);fill:var(--ink)}
+.cross{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3;pointer-events:none}
+.hdot{stroke:var(--panel);stroke-width:2}
+.hit{fill:transparent;cursor:crosshair}
+.tip{position:absolute;top:8px;pointer-events:none;background:var(--panel);color:var(--ink);border:1px solid var(--line);box-shadow:0 4px 14px rgba(0,0,0,.12);font-size:12px;line-height:1.5;padding:8px 10px;border-radius:8px;font-family:var(--f-mono);z-index:2;min-width:160px}
+.tip b{font-family:var(--f-body);font-weight:600}
+.tip .r{display:grid;grid-template-columns:10px auto 1fr auto;gap:6px;align-items:center;font-variant-numeric:tabular-nums}
+.tip .r span:nth-child(3){color:var(--muted)}
+.sw{width:10px;height:10px;border-radius:2px;display:inline-block}
+.empty{padding:18px;color:var(--muted);font-size:.9rem}
+.note{padding:8px 18px 12px;font-size:.78rem;color:var(--muted)}
+.note.warn{color:var(--warn-ink)}
+
+.tbl-wrap{overflow-x:auto;border-top:1px solid var(--line)}
+table{width:100%;border-collapse:collapse;font-size:.85rem;font-variant-numeric:tabular-nums}
+th,td{padding:8px 12px;text-align:right;white-space:nowrap}
+th{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500;border-bottom:1px solid var(--line)}
+th:first-child,td:first-child{text-align:left;padding-left:18px}
+td:last-child,th:last-child{padding-right:18px}
+tbody tr+tr td{border-top:1px solid var(--line)}
+td.sym{font-family:var(--f-mono);font-weight:500}
+td.sym .sw{margin-right:8px;vertical-align:0}
+td.nm{text-align:left;color:var(--muted);max-width:280px;overflow:hidden;text-overflow:ellipsis}
+td.num{font-family:var(--f-mono)}
+.upc{color:var(--up)} .dnc{color:var(--down)} .na{color:var(--muted)}
+.subhead{padding:14px 18px 0;font-family:var(--f-display);font-weight:600;font-size:.95rem;border-top:1px solid var(--line)}
+
+.fix{display:grid;gap:8px;padding:18px;color:var(--ink);font-size:.9rem}
+.fix code{font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
+.fix button{justify-self:start;font:inherit;font-size:.85rem;font-weight:600;border:0;border-radius:6px;padding:7px 14px;background:var(--accent);color:var(--panel);cursor:pointer}
+@media (max-width:560px){ td.nm{display:none} th.nm{display:none} }
 </style>
 
 <div class="wrap">
@@ -84,70 +87,59 @@ svg.hist{width:100%;height:170px;display:block;overflow:visible}
     <h1>Tim's Desk</h1>
     <div class="clock" id="clock">Vancouver</div>
   </header>
-
-  <div class="grid">
-    <!-- Panel 1: Google Drive, live -->
-    <section class="panel" id="drive" aria-labelledby="drive-h">
-      <div class="ph">
-        <div><span class="eyebrow">Google Drive</span><h2 id="drive-h">Recently changed files</h2></div>
-        <div class="meta">
-          <span class="pill live" id="drive-pill">Live</span>
-          <span class="stamp" id="drive-stamp">connecting…</span>
-          <button class="ref" id="drive-refresh" type="button">Refresh</button>
-        </div>
-      </div>
-      <div class="summary" id="drive-summary">
-        <div class="stat"><b id="s-today">–</b><span>changed today</span></div>
-        <div class="stat"><b id="s-week">–</b><span>changed in last 7 days</span></div>
-        <div class="stat"><b id="s-latest">–</b><span>last edit</span></div>
-      </div>
-      <ul class="rows" id="drive-list">
-        <li><span class="type">…</span><div class="skel"></div><span></span></li>
-        <li><span class="type">…</span><div class="skel"></div><span></span></li>
-        <li><span class="type">…</span><div class="skel"></div><span></span></li>
-      </ul>
-      <div class="note">Pulls from your Google Drive connector every 5 minutes while this page is open.</div>
-    </section>
-
-    <!-- Panel 2: Market watch, fed by a Google Sheet a GitHub Actions job keeps current -->
-    <section class="panel" id="mkt" aria-labelledby="mkt-h">
-      <div class="ph">
-        <div><span class="eyebrow">Market watch</span><h2 id="mkt-h">Watchlist</h2></div>
-        <div class="meta">
-          <span class="pill sample" id="mkt-pill" hidden>Sample data</span>
-          <span class="stamp" id="mkt-stamp">waiting for data…</span>
-          <button class="ref" id="mkt-refresh" type="button">Refresh</button>
-        </div>
-      </div>
-      <ul class="rows tick" id="mkt-list"></ul>
-      <div class="empty" id="mkt-empty">No watchlist rows yet.</div>
-      <div class="note" id="mkt-note">Rows marked sample are placeholders, not real quotes.</div>
-    </section>
-
-    <!-- Panel 3: price history, from the same Sheet's History tab -->
-    <section class="panel" id="hist" aria-labelledby="hist-h">
-      <div class="ph">
-        <div><span class="eyebrow">Price history</span><h2 id="hist-h">90-day chart</h2></div>
-        <div class="meta">
-          <span class="stamp" id="hist-stamp">waiting for data…</span>
-        </div>
-      </div>
-      <div class="pills" id="hist-pills"></div>
-      <div class="chart-wrap">
-        <svg class="hist" id="hist-svg" viewBox="0 0 600 170" preserveAspectRatio="none"></svg>
-        <div class="tooltip" id="hist-tooltip"></div>
-      </div>
-      <div class="empty" id="hist-empty">No history yet.</div>
-      <div class="note">Reads the same Sheet as Watchlist - a GitHub Actions job writes both ~twice a day.</div>
-    </section>
+  <div class="sub">
+    <span id="src-stamp">Loading your price sheet…</span>
+    <button class="ref" id="refresh" type="button">Refresh</button>
+    <a id="sheet-link" href="https://docs.google.com/spreadsheets/d/1rKLxaCrsAkvYPAff77JrOjBbfr3ix2CmClVhx7td03c/edit" target="_blank" rel="noopener">Open sheet</a>
   </div>
+  <div id="global-fix"></div>
+
+  <section class="panel" id="v-corp" aria-labelledby="corp-h">
+    <div class="ph">
+      <div><span class="eyebrow">Group 1 in your sheet</span><h2 id="corp-h">Corporate class ETFs</h2></div>
+      <div class="ranges" role="group" aria-label="Time range"></div>
+    </div>
+    <div class="chart-head"><span class="ch-title">% change over the period</span><span class="ch-span"></span></div>
+    <div class="chart-wrap"><svg class="chart" role="img"></svg><div class="tip" hidden></div></div>
+    <div class="empty" hidden></div>
+    <div class="note warn" hidden></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Symbol</th><th class="nm">Name</th><th>Last</th><th>Day</th><th class="rng-h">Period</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+  </section>
+
+  <section class="panel" id="v-inc" aria-labelledby="inc-h">
+    <div class="ph">
+      <div><span class="eyebrow">Group 2 in your sheet</span><h2 id="inc-h">Income ETFs</h2></div>
+      <div class="ranges" role="group" aria-label="Time range"></div>
+    </div>
+    <div class="chart-head"><span class="ch-title">% change over the period (price only)</span><span class="ch-span"></span></div>
+    <div class="chart-wrap"><svg class="chart" role="img"></svg><div class="tip" hidden></div></div>
+    <div class="empty" hidden></div>
+    <div class="note warn" hidden></div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Symbol</th><th class="nm">Name</th><th>Last</th><th>Day</th><th class="rng-h">Period</th><th>Yield (TTM)</th><th>Dist. yield</th><th>Yield 1y ago</th></tr></thead>
+      <tbody></tbody>
+    </table></div>
+
+    <div class="subhead">Yield history</div>
+    <div class="chart-head"><span class="ch-title">Trailing 12-month yield, %</span><span class="ch-span y-span"></span></div>
+    <div class="chart-wrap" id="ywrap"><svg class="chart" id="ychart" role="img"></svg><div class="tip" hidden></div></div>
+    <div class="empty" id="yempty" hidden></div>
+  </section>
 </div>
 
 <script>
 (function(){
+  "use strict";
   const TZ = "America/Vancouver";
   const $ = id => document.getElementById(id);
-  const SHEET_FILE_ID = "1rKLxaCrsAkvYPAff77JrOjBbfr3ix2CmClVhx7td03c"; // "Tim's Desk Prices"
+  const SHEET_FILE_ID = "1rKLxaCrsAkvYPAff77JrOjBbfr3ix2CmClVhx7td03c";
+  const DRIVE = "Google Drive", READ = "read_file_content";
+  const RANGES = ["1D","5D","1M","6M","1Y","5Y"];
+  const SERIES = ["--s1","--s2","--s3","--s4","--s5","--s6","--s7","--s8"];
+  const svgNS = "http://www.w3.org/2000/svg";
 
   // ---------- clock ----------
   function tickClock(){
@@ -156,350 +148,350 @@ svg.hist{width:100%;height:170px;display:block;overflow:visible}
       " · " + d.toLocaleTimeString("en-CA",{timeZone:TZ,hour:"numeric",minute:"2-digit"}) + " PT";
   }
   tickClock(); setInterval(tickClock, 30000);
-
   function rel(ms){
     const s = Math.round((Date.now()-ms)/1000);
     if (s < 60) return "just now";
     const m = Math.round(s/60); if (m < 60) return m + " min ago";
     const h = Math.round(m/60); if (h < 24) return h + " h ago";
-    const d = Math.round(h/24); if (d < 7) return d + " d ago";
-    return new Date(ms).toLocaleDateString("en-CA",{timeZone:TZ,month:"short",day:"numeric"});
-  }
-  const dayKey = ms => new Date(ms).toLocaleDateString("en-CA",{timeZone:TZ});
-
-  // ---------- Drive panel ----------
-  const DRIVE = "Google Drive";
-  const DRIVE_TOOL = "list_recent_files";
-  const DRIVE_INPUT = {pageSize: 12, orderBy: "lastModified", excludeContentSnippets: true};
-  let driveUpdated = null, driveFiles = null;
-
-  function typeOf(f){
-    const m = f.mimeType || "";
-    if (m.includes("google-apps.spreadsheet") || /xlsx?|csv/.test(f.fileExtension||"")) return "SHEET";
-    if (m.includes("google-apps.document") || /docx?/.test(f.fileExtension||"")) return "DOC";
-    if (m.includes("google-apps.presentation") || /pptx?/.test(f.fileExtension||"")) return "SLIDE";
-    if (m.includes("pdf")) return "PDF";
-    if (m.includes("folder")) return "DIR";
-    if (m.startsWith("image/")) return "IMG";
-    return (f.fileExtension || "FILE").slice(0,5).toUpperCase();
+    return Math.round(h/24) + " d ago";
   }
 
-  function renderDrive(){
-    const list = $("drive-list");
-    list.replaceChildren();
-    if (!driveFiles) return;
-    if (!driveFiles.length){
-      const li = document.createElement("li"); li.className = "empty"; li.style.display="block";
-      li.textContent = "No recent files in your Drive."; list.append(li);
-    }
-    const today = dayKey(Date.now()), weekAgo = Date.now() - 7*864e5;
-    let nToday = 0, nWeek = 0, latest = 0;
-    for (const f of driveFiles){
-      const t = Date.parse(f.modifiedTime || f.viewedByMeTime || f.createdTime || "") || 0;
-      if (t && dayKey(t) === today) nToday++;
-      if (t >= weekAgo) nWeek++;
-      latest = Math.max(latest, t);
-      const li = document.createElement("li");
-      const ty = document.createElement("span"); ty.className = "type"; ty.textContent = typeOf(f);
-      const nm = document.createElement("div"); nm.className = "fname";
-      const a = document.createElement("a"); a.textContent = f.title || "Untitled";
-      if (f.viewUrl) { a.href = f.viewUrl; a.target = "_blank"; a.rel = "noopener"; }
-      const sm = document.createElement("small");
-      sm.textContent = (f.owner ? f.owner.split("@")[0] : "") + (f.createdTime && Date.parse(f.createdTime) > weekAgo ? " · new this week" : "");
-      nm.append(a, sm);
-      const w = document.createElement("span"); w.className = "when"; w.textContent = t ? rel(t) : "";
-      li.append(ty, nm, w); list.append(li);
-    }
-    $("s-today").textContent = nToday;
-    $("s-week").textContent = nWeek + (driveFiles.length >= DRIVE_INPUT.pageSize && nWeek >= DRIVE_INPUT.pageSize ? "+" : "");
-    $("s-latest").textContent = latest ? rel(latest) : "–";
-  }
-
-  function driveStatus(text, err){
-    const pill = $("drive-pill");
-    pill.className = "pill " + (err ? "err" : "live");
-    pill.textContent = err ? "Not connected" : "Live";
-    $("drive-stamp").textContent = text;
-  }
-  function refreshStamp(){ if (driveUpdated && driveFiles) $("drive-stamp").textContent = "updated " + rel(driveUpdated); }
-  setInterval(()=>{ refreshStamp(); if (driveFiles) renderDrive(); }, 60000);
-
-  function driveError(e){
-    const code = e && e.code;
-    const retract = ["needs_reauth","server_not_connected","blocked_by_policy","approval_required","not_in_manifest","selection_required","not_granted","capability_disabled","consent_required"];
-    const msgs = {
-      needs_reauth: "Reconnect Google Drive in claude.ai Settings → Connectors.",
-      server_not_connected: "Add Google Drive in claude.ai Settings → Connectors.",
-      selection_required: "Choose which Google Drive connector this page should use.",
-      not_in_manifest: "Google Drive access was turned off for this page.",
-      consent_required: "Allow Google Drive for this page to see your files.",
-      blocked_by_policy: "Your organization blocks this Drive tool.",
-      approval_required: "This Drive tool needs approval first."
-    };
-    if (retract.includes(code)){
-      driveFiles = null; $("drive-list").replaceChildren();
-      const li = document.createElement("li"); li.className = "empty"; li.style.display = "block";
-      li.textContent = msgs[code] || "Google Drive isn't available in this view.";
-      $("drive-list").append(li);
-      driveStatus("", true);
-    } else {
-      $("drive-stamp").textContent = (driveFiles ? "showing last good data · " : "") + (e && e.message ? "Drive didn't answer" : "error");
-    }
-  }
-
-  let mcpRef = null;
-  (window.claude?.use ? claude.use("mcp") : Promise.resolve(null)).then(mcp => {
-    mcpRef = mcp;
-    if (!mcp){ driveError({code:"capability_disabled"}); mktUnavailable(); return; }
-
-    mcp.watchTool(DRIVE, DRIVE_TOOL, DRIVE_INPUT, ev => {
-      if (ev.type === "error") return driveError(ev.error);
-      const p = ev.result && ev.result.payload;
-      const files = p && Array.isArray(p.files) ? p.files : [];
-      driveFiles = files;
-      driveUpdated = (ev.result.cache && ev.result.cache.storedAt) || Date.now();
-      driveStatus("updated " + rel(driveUpdated), false);
-      renderDrive();
-    }, {refetchInterval: 5*60*1000});
-
-    mcp.watchTool(DRIVE, "read_file_content", {fileId: SHEET_FILE_ID}, ev => {
-      if (ev.type === "error"){ mktUnavailable(); return; }
-      const text = ev.result && ev.result.payload && ev.result.payload.fileContent;
-      if (!text) return;
-      onSheetText(text);
-    }, {refetchInterval: 5*60*1000});
-  });
-  $("drive-refresh").addEventListener("click", () => {
-    if (!mcpRef) return;
-    $("drive-stamp").textContent = "refreshing…";
-    mcpRef.invalidate(DRIVE, DRIVE_TOOL).catch(()=>{});
-  });
-  $("mkt-refresh").addEventListener("click", () => {
-    if (!mcpRef) return;
-    $("mkt-stamp").textContent = "refreshing…";
-    mcpRef.invalidate(DRIVE, "read_file_content").catch(()=>{});
-  });
-  function mktUnavailable(){
-    $("mkt-stamp").textContent = "connect Google Drive to see the watchlist";
-    $("hist-stamp").textContent = "";
-  }
-
-  // ---------- parsing the Sheet's "read_file_content" text into rows ----------
-  // The connector returns a markdown-ish multi-table document: each sheet tab
-  // becomes its own "### Sheet Name: X" section with a pipe table under
-  // "### Table Sample Data:". Each table has a blank spacer row, a ":---:"
-  // alignment row, THEN the real header row, then data rows. Cells escape
-  // markdown-special characters with a backslash (e.g. "change\_pct", "\-0.5").
-  function unescapeMd(s){ return s.replace(/\\(.)/g, "$1").trim(); }
-  function splitRow(line){ return line.split("|").slice(1,-1).map(unescapeMd); }
-
-  function parseSheetTables(text){
+  // ---------- sheet parsing ----------
+  // read_file_content returns one "### Sheet Name: X" section per tab, with a pipe
+  // table under "### Table Sample Data:": a blank spacer row, a ":---:" row, the
+  // header row, then data rows. Markdown-special characters are backslash-escaped.
+  const unesc = s => s.replace(/\\(.)/g, "$1").trim();
+  const splitRow = line => line.split("|").slice(1,-1).map(unesc);
+  function parseTabs(text){
     const out = {};
-    const chunks = text.split(/###\s*Sheet Name:\s*/).slice(1);
-    for (const chunk of chunks){
-      const name = (chunk.match(/^([^\n]+)/) || [null,"?"])[1].trim();
+    for (const chunk of text.split(/###\s*Sheet Name:\s*/).slice(1)){
+      const name = (chunk.match(/^([^\n]+)/) || [,"?"])[1].trim();
       const m = chunk.match(/###\s*Table Sample Data:\s*\n([\s\S]*?)(?=\n###\s|$)/);
-      if (!m){ out[name] = []; continue; }
-      const lines = m[1].split("\n").map(l=>l.trim()).filter(l=>l.startsWith("|"));
-      if (lines.length < 4){ out[name] = []; continue; }
+      const lines = m ? m[1].split("\n").map(l=>l.trim()).filter(l=>l.startsWith("|")) : [];
+      if (lines.length < 3){ out[name.toLowerCase()] = []; continue; }
       const header = splitRow(lines[2]);
-      out[name] = lines.slice(3).map(line => {
-        const cells = splitRow(line);
-        const o = {}; header.forEach((h,i)=>{ o[h] = cells[i] ?? ""; }); return o;
+      out[name.toLowerCase()] = lines.slice(3).map(line => {
+        const c = splitRow(line), o = {}; header.forEach((h,i)=>{ o[h] = c[i] ?? ""; }); return o;
       });
     }
     return out;
   }
+  const num = v => { const n = parseFloat(String(v ?? "").replace(/[%,$\s]/g,"")); return isNaN(n) ? null : n; };
 
-  function toCurrentRows(raw){
-    return (raw||[]).map(r => ({
-      order: parseInt(r.order,10) || 99,
-      symbol: r.symbol || "?",
-      name: r.name || "",
-      price: parseFloat(r.price),
-      currency: r.currency || "",
-      change_pct: parseFloat(r.change_pct),
-      spark: (r.spark||"").split(",").map(Number).filter(n=>!isNaN(n)),
-      as_of: r.as_of || "",
-      sample: String(r.sample).trim().toLowerCase() === "true",
-    })).sort((a,b)=>a.order-b.order);
-  }
-
-  function toHistorySeries(raw){
-    if (!raw || !raw.length) return {dates:[], series:{}};
-    const dates = raw.map(r=>r.date);
-    const symbols = Object.keys(raw[0]).filter(k=>k!=="date");
-    const series = {};
-    for (const sym of symbols){
-      series[sym] = raw.map(r => { const v = parseFloat(r[sym]); return isNaN(v) ? null : v; });
+  // Groups: a "group" column wins if present; otherwise blank rows split the Current tab into blocks.
+  function groupsFrom(current){
+    if (current.length && "group" in current[0]){
+      const map = new Map();
+      for (const r of current){ if (!r.symbol) continue; const g = r.group || "Other"; if (!map.has(g)) map.set(g, []); map.get(g).push(r); }
+      return [...map.values()];
     }
-    return {dates, series};
-  }
-
-  function onSheetText(text){
-    const tables = parseSheetTables(text);
-    renderMkt(toCurrentRows(tables["Current"]));
-    const hist = toHistorySeries(tables["History"]);
-    histState.dates = hist.dates; histState.series = hist.series;
-    const symbols = Object.keys(hist.series);
-    if (!histState.selected || !symbols.includes(histState.selected)){
-      histState.selected = pickDefaultSymbol(symbols);
+    const blocks = []; let cur = [];
+    for (const r of current){
+      if (!r.symbol){ if (cur.length){ blocks.push(cur); cur = []; } continue; }
+      cur.push(r);
     }
-    renderHistPills(); renderHistChart();
+    if (cur.length) blocks.push(cur);
+    return blocks;
   }
 
-  // ---------- Market panel (Panel 2) ----------
-  function spark(vals, up){
-    const svgNS = "http://www.w3.org/2000/svg";
-    const svg = document.createElementNS(svgNS,"svg"); svg.setAttribute("class","spark"); svg.setAttribute("viewBox","0 0 84 28");
-    if (!Array.isArray(vals) || vals.length < 2) return svg;
-    const lo = Math.min(...vals), hi = Math.max(...vals), span = (hi-lo)||1;
-    const pts = vals.map((v,i)=>[2 + i*(80/(vals.length-1)), 25 - ((v-lo)/span)*22]);
-    const d = pts.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
-    const col = up ? "var(--up)" : "var(--down)";
-    const area = document.createElementNS(svgNS,"path");
-    area.setAttribute("d", d + ` L${pts.at(-1)[0].toFixed(1)} 27 L2 27 Z`); area.setAttribute("fill", col); area.setAttribute("opacity",".12");
-    const line = document.createElementNS(svgNS,"path");
-    line.setAttribute("d", d); line.setAttribute("fill","none"); line.setAttribute("stroke", col); line.setAttribute("stroke-width","1.6");
-    const dot = document.createElementNS(svgNS,"circle");
-    dot.setAttribute("cx", pts.at(-1)[0]); dot.setAttribute("cy", pts.at(-1)[1]); dot.setAttribute("r","2.4"); dot.setAttribute("fill", col);
-    svg.append(area, line, dot); return svg;
+  // A wide table (first column = date/time, other columns = symbols) → {t:[ms], s:{SYM:[v|null]}}
+  function wide(rows){
+    if (!rows || !rows.length) return null;
+    const keys = Object.keys(rows[0]); const tk = keys[0];
+    const pts = rows.map(r => ({t: Date.parse(/^\d{4}-\d{2}-\d{2}$/.test(r[tk]) ? r[tk]+"T12:00:00Z" : r[tk]), r})).filter(p => !isNaN(p.t)).sort((a,b)=>a.t-b.t);
+    const s = {}; for (const k of keys.slice(1)) s[k.toUpperCase()] = pts.map(p => num(p.r[k]));
+    return {t: pts.map(p=>p.t), s, dateOnly: /date/i.test(tk)};
   }
-  const fmt = (n, cur) => {
-    if (typeof n !== "number" || isNaN(n)) return "–";
-    const dp = n >= 1000 ? 0 : 2;
-    return n.toLocaleString("en-CA",{minimumFractionDigits:dp,maximumFractionDigits:dp}) + (cur ? " " + cur : "");
-  };
 
-  function renderMkt(rows){
-    const list = $("mkt-list"); list.replaceChildren();
-    $("mkt-empty").hidden = rows.length > 0;
-    const anySample = rows.some(r => r.sample);
-    $("mkt-pill").hidden = !anySample;
-    $("mkt-note").hidden = !anySample;
-    let newest = 0;
-    for (const r of rows){
-      const up = (r.change_pct ?? 0) >= 0;
-      const li = document.createElement("li");
-      const s = document.createElement("div"); s.className = "sym";
-      const b = document.createElement("b"); b.textContent = r.symbol || "?";
-      const sm = document.createElement("small"); sm.textContent = (r.name || "") + (r.sample ? " · sample" : "");
-      s.append(b, sm);
-      const px = document.createElement("div"); px.className = "px";
-      px.append(document.createTextNode(fmt(r.price, r.currency)));
-      const ch = document.createElement("small"); ch.className = up ? "upc" : "dnc";
-      ch.textContent = typeof r.change_pct === "number" && !isNaN(r.change_pct) ? (up ? "▲ " : "▼ ") + Math.abs(r.change_pct).toFixed(2) + "%" : "";
-      px.append(ch);
-      li.append(s, spark(r.spark, up), px); list.append(li);
-      const t = Date.parse(r.as_of || ""); if (t) newest = Math.max(newest, t);
+  // Keep only this group's columns, and only rows where at least one of them has a price
+  // (so holidays and FX-only rows don't count as trading days).
+  function restrict(series, syms){
+    if (!series) return null;
+    const keep = series.t.map((_,i) => syms.some(k => series.s[k] && series.s[k][i] != null));
+    const s = {}; for (const k of syms) if (series.s[k]) s[k] = series.s[k].filter((_,i)=>keep[i]);
+    return {t: series.t.filter((_,i)=>keep[i]), s, dateOnly: series.dateOnly};
+  }
+
+  // ---------- range selection ----------
+  const DAY = 864e5;
+  function sliceRange(series, key){
+    if (!series || !series.t.length) return null;
+    const t = series.t, last = t[t.length-1];
+    let i0 = 0;
+    if (key === "5D") i0 = Math.max(0, t.length - 5);
+    else if (key !== "1D"){
+      const back = {"1M":31, "6M":183, "1Y":366, "5Y":1827}[key] * DAY;
+      const cut = last - back;
+      i0 = t.findIndex(x => x >= cut); if (i0 < 0) i0 = 0;
     }
-    $("mkt-stamp").textContent = newest ? "as of " + rel(newest) : (rows.length ? "" : "waiting for data…");
+    const short = key !== "1D" && key !== "5D" && t[0] > last - ({"1M":31,"6M":183,"1Y":366,"5Y":1827}[key] - 4) * DAY;
+    const s = {}; for (const k in series.s) s[k] = series.s[k].slice(i0);
+    return {t: t.slice(i0), s, short, earliest: t[0], dateOnly: series.dateOnly};
   }
 
-  // ---------- Price history panel (Panel 3) ----------
-  let histState = {dates:[], series:{}, selected:null};
-
-  function pickDefaultSymbol(symbols){
-    try {
-      const saved = localStorage.getItem("tims-desk-hist-symbol");
-      if (saved && symbols.includes(saved)) return saved;
-    } catch(e){}
-    return symbols[0] || null;
+  // ---------- formatting ----------
+  const fmtPx = n => n == null ? "—" : n.toLocaleString("en-CA",{minimumFractionDigits:2,maximumFractionDigits:2});
+  const fmtPct = (n, dp=2) => n == null ? "—" : (n > 0 ? "+" : n < 0 ? "−" : "") + Math.abs(n).toFixed(dp) + "%";
+  const cls = n => n == null ? "na" : n > 0 ? "upc" : n < 0 ? "dnc" : "";
+  const fmtDate = (ms, withYear, dateOnly) => dateOnly
+    ? new Date(ms).toLocaleDateString("en-CA",{timeZone:"UTC",month:"short",day:"numeric",...(withYear?{year:"numeric"}:{})})
+    : new Date(ms).toLocaleString("en-CA",{timeZone:TZ,hour:"numeric",minute:"2-digit"});
+  function niceTicks(lo, hi, n){
+    const span = hi - lo || 1, raw = span / n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    const step = [1,2,2.5,5,10].map(f=>f*mag).find(s => s >= raw) || raw;
+    const out = []; for (let v = Math.ceil(lo/step)*step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(6));
+    return out;
   }
+  function el(tag, attrs, text){ const e = document.createElementNS(svgNS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; return e; }
+  const colorOf = i => `var(${SERIES[i % SERIES.length]})`;
 
-  function renderHistPills(){
-    const wrap = $("hist-pills"); wrap.replaceChildren();
-    const symbols = Object.keys(histState.series);
-    for (const sym of symbols){
-      const btn = document.createElement("button");
-      btn.className = "pill-btn"; btn.type = "button"; btn.textContent = sym;
-      btn.setAttribute("aria-pressed", String(sym === histState.selected));
-      btn.addEventListener("click", () => {
-        histState.selected = sym;
-        try { localStorage.setItem("tims-desk-hist-symbol", sym); } catch(e){}
-        renderHistPills(); renderHistChart();
-      });
-      wrap.append(btn);
+  // ---------- generic multi-line chart ----------
+  // mode "rebased": each line is % change from its first value in range. mode "level": raw values (yields in %).
+  function drawChart(svg, tip, data, syms, colors, mode){
+    svg.replaceChildren(); tip.hidden = true;
+    // Size the drawing to its real width so text stays at true size on phones.
+    const avail = (svg.parentElement && svg.parentElement.clientWidth) ? svg.parentElement.clientWidth - 36 : 720;
+    const W = Math.max(300, Math.round(avail)), narrow = W < 520;
+    const H = narrow ? 240 : 300, padL = narrow ? 44 : 52, padR = narrow ? 80 : 96, padT = 12, padB = 26;
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    const n = data.t.length;
+    const lines = syms.map((sym, k) => {
+      const raw = data.s[sym] || [];
+      const base = raw.find(v => v != null);
+      const vals = raw.map(v => v == null ? null : mode === "rebased" ? (v/base - 1)*100 : v);
+      return {sym, raw, vals, color: colors[k], has: base != null && raw.filter(v=>v!=null).length >= 2};
+    }).filter(l => l.has);
+    if (!lines.length || n < 2) return false;
+
+    const all = lines.flatMap(l => l.vals.filter(v => v != null));
+    let lo = Math.min(...all), hi = Math.max(...all);
+    if (mode === "rebased"){ lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
+    const pad = (hi - lo) * 0.08 || 1; lo -= pad; hi += pad;
+    const pw = W - padL - padR, ph = H - padT - padB;
+    const x = i => padL + (i/(n-1)) * pw;
+    const y = v => padT + ph - ((v - lo)/(hi - lo)) * ph;
+
+    for (const v of niceTicks(lo, hi, 5)){
+      svg.append(el("line",{x1:padL,x2:padL+pw,y1:y(v),y2:y(v),class: (mode==="rebased" && Math.abs(v)<1e-9) ? "zero-l" : "grid-l"}));
+      svg.append(el("text",{x:padL-8,y:y(v)+4,"text-anchor":"end",class:"axis"}, mode === "rebased" ? (v>0?"+":"") + v.toFixed(Math.abs(v)<10 && v%1 ? 1 : 0) + "%" : v.toFixed(1) + "%"));
     }
-  }
+    const tickIdx = n <= (narrow ? 3 : 6) ? [...Array(n).keys()] : (narrow ? [0, Math.round((n-1)/2), n-1] : [0, Math.round((n-1)/3), Math.round(2*(n-1)/3), n-1]);
+    const yearSpan = data.t[n-1] - data.t[0] > 300*DAY;
+    tickIdx.forEach((i, j) => svg.append(el("text",{x:x(i),y:H-6,"text-anchor": j===0 ? "start" : (i===n-1 ? "end" : "middle"),class:"axis"}, fmtDate(data.t[i], yearSpan, data.dateOnly))));
 
-  function renderHistChart(){
-    const svg = $("hist-svg"); svg.replaceChildren();
-    const sym = histState.selected;
-    const vals = sym ? histState.series[sym] : null;
-    const dates = histState.dates;
-    const hasData = !!(vals && vals.some(v => v != null));
-    $("hist-empty").hidden = hasData;
-    if (!hasData) { $("hist-stamp").textContent = ""; return; }
-
-    const W = 600, H = 170, padL = 44, padR = 8, padT = 10, padB = 20;
-    const plotW = W - padL - padR, plotH = H - padT - padB;
-    const nums = vals.map((v,i)=>({v,i})).filter(p => p.v != null);
-    if (nums.length < 2) return;
-    const lo = Math.min(...nums.map(p=>p.v)), hi = Math.max(...nums.map(p=>p.v));
-    const span = (hi - lo) || 1;
-    const x = i => padL + (i/(vals.length-1)) * plotW;
-    const y = v => padT + plotH - ((v-lo)/span) * plotH;
-
-    const svgNS = "http://www.w3.org/2000/svg";
-    function el(tag, attrs){ const e = document.createElementNS(svgNS,tag); for (const k in attrs) e.setAttribute(k, attrs[k]); return e; }
-
-    for (let s=0; s<=3; s++){
-      const v = lo + (s/3) * span;
-      const gy = y(v);
-      svg.append(el("line",{x1:padL,x2:W-padR,y1:gy,y2:gy,class:"hist-grid"}));
-      const lbl = el("text",{x:padL-6,y:gy+3,"text-anchor":"end",class:"hist-axis"});
-      lbl.textContent = v >= 1000 ? Math.round(v).toLocaleString() : v.toFixed(2);
-      svg.append(lbl);
+    for (const l of lines){
+      let d = "", pen = false;
+      l.vals.forEach((v,i) => { if (v == null){ pen = false; return; } d += (pen ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1) + " "; pen = true; });
+      svg.append(el("path",{d, class:"line", stroke:l.color}));
+    }
+    // end labels, nudged apart so they never overlap
+    const ends = lines.map(l => { let i = l.vals.length-1; while (i>0 && l.vals[i]==null) i--; return {l, i, v:l.vals[i], yy:y(l.vals[i])}; }).sort((a,b)=>a.yy-b.yy);
+    for (let k=1;k<ends.length;k++) if (ends[k].yy - ends[k-1].yy < 13) ends[k].yy = ends[k-1].yy + 13;
+    const over = ends.length ? ends[ends.length-1].yy - (padT+ph) : 0;
+    if (over > 0) ends.forEach(e => e.yy -= over);
+    for (const e of ends){
+      svg.append(el("circle",{cx:x(e.i),cy:y(e.v),r:3.5,fill:e.l.color,class:"hdot"}));
+      svg.append(el("text",{x:padL+pw+8,y:e.yy+4,class:"endlbl"}, e.l.sym + " " + (mode==="rebased" ? fmtPct(e.v,1) : e.v.toFixed(2)+"%")));
     }
 
-    const firstI = nums[0].i, lastI = nums.at(-1).i, midI = nums[Math.floor(nums.length/2)].i;
-    [[firstI,"start"],[midI,"middle"],[lastI,"end"]].forEach(([i,anchor]) => {
-      const lbl = el("text",{x:x(i),y:H-4,"text-anchor":anchor,class:"hist-axis"});
-      lbl.textContent = (dates[i] || "").slice(5);
-      svg.append(lbl);
-    });
-
-    const up = nums.at(-1).v >= nums[0].v;
-    const colorVar = up ? "var(--up)" : "var(--down)";
-
-    let d = "";
-    nums.forEach((p,idx) => { d += (idx ? "L" : "M") + x(p.i).toFixed(1) + " " + y(p.v).toFixed(1) + " "; });
-    const areaD = d + `L ${x(nums.at(-1).i).toFixed(1)} ${padT+plotH} L ${x(nums[0].i).toFixed(1)} ${padT+plotH} Z`;
-    svg.append(el("path",{d:areaD, fill:colorVar, class:"hist-area"}));
-    svg.append(el("path",{d, fill:"none", stroke:colorVar, class:"hist-line"}));
-
-    const lastPt = nums.at(-1);
-    svg.append(el("circle",{cx:x(lastPt.i),cy:y(lastPt.v),r:3.5,fill:colorVar,class:"hist-dot"}));
-
-    const crosshair = el("line",{class:"hist-crosshair",y1:padT,y2:padT+plotH});
-    const hoverDot = el("circle",{r:4,class:"hist-dot",stroke:colorVar,fill:"var(--panel)",style:"opacity:0"});
-    svg.append(crosshair, hoverDot);
-    const hit = el("rect",{x:padL,y:padT,width:plotW,height:plotH,class:"hist-hit"});
+    // hover / touch crosshair with all series at that point
+    const cross = el("line",{class:"cross",y1:padT,y2:padT+ph,opacity:0});
+    const dots = lines.map(l => el("circle",{r:4,fill:l.color,class:"hdot",opacity:0}));
+    svg.append(cross, ...dots);
+    const hit = el("rect",{x:padL,y:padT,width:pw,height:ph,class:"hit"});
     svg.append(hit);
-
-    const tooltip = $("hist-tooltip");
-    function showAt(i){
-      const v = vals[i]; if (v == null) return;
-      const px = x(i), py = y(v);
-      crosshair.setAttribute("x1",px); crosshair.setAttribute("x2",px); crosshair.style.opacity = 1;
-      hoverDot.setAttribute("cx",px); hoverDot.setAttribute("cy",py); hoverDot.style.opacity = 1;
-      const rect = svg.getBoundingClientRect(); const scale = rect.width / W;
-      tooltip.style.left = (px*scale) + "px"; tooltip.style.top = (py*scale) + "px";
-      tooltip.innerHTML = `<b>${dates[i]||""}</b><br>${fmt(v,"")}`;
-      tooltip.style.opacity = 1;
+    function show(clientX){
+      const r = svg.getBoundingClientRect(), sx = (clientX - r.left) * (W / r.width);
+      const i = Math.max(0, Math.min(n-1, Math.round((sx - padL)/pw*(n-1))));
+      cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("opacity", 1);
+      tip.replaceChildren();
+      const h = document.createElement("b"); h.textContent = fmtDate(data.t[i], true, data.dateOnly); tip.append(h);
+      lines.map((l,k)=>({l,k,v:l.vals[i]})).sort((a,b)=>(b.v??-1e9)-(a.v??-1e9)).forEach(({l,k,v}) => {
+        const dot = dots[k];
+        if (v == null){ dot.setAttribute("opacity",0); } else { dot.setAttribute("cx",x(i)); dot.setAttribute("cy",y(v)); dot.setAttribute("opacity",1); }
+        const row = document.createElement("div"); row.className = "r";
+        const sw = document.createElement("span"); sw.className = "sw"; sw.style.background = l.color;
+        const a = document.createElement("span"); a.textContent = l.sym;
+        const b = document.createElement("span"); b.textContent = mode === "rebased" && l.raw[i] != null ? fmtPx(l.raw[i]) : "";
+        const c = document.createElement("span"); c.textContent = v == null ? "—" : mode === "rebased" ? fmtPct(v) : v.toFixed(2) + "%";
+        row.append(sw, a, b, c); tip.append(row);
+      });
+      tip.hidden = false;
+      const px = x(i) * (r.width / W) + 18, tw = tip.offsetWidth;
+      tip.style.left = (px + tw + 20 > r.width ? px - tw - 36 : px + 12) + "px";
     }
-    function hide(){ crosshair.style.opacity = 0; hoverDot.style.opacity = 0; tooltip.style.opacity = 0; }
-    hit.addEventListener("mousemove", e => {
-      const rect = svg.getBoundingClientRect();
-      const mx = (e.clientX - rect.left) * (W / rect.width);
-      let idx = 0, best = Infinity;
-      for (let i=0;i<vals.length;i++){ const dd = Math.abs(x(i)-mx); if (dd < best){ best = dd; idx = i; } }
-      showAt(idx);
-    });
-    hit.addEventListener("mouseleave", hide);
-
-    $("hist-stamp").textContent = dates.length ? "through " + dates.at(-1) : "";
+    function hide(){ cross.setAttribute("opacity",0); dots.forEach(d=>d.setAttribute("opacity",0)); tip.hidden = true; }
+    hit.addEventListener("pointermove", e => show(e.clientX));
+    hit.addEventListener("pointerdown", e => show(e.clientX));
+    hit.addEventListener("pointerleave", hide);
+    svg.setAttribute("aria-label", "Line chart of " + lines.map(l=>l.sym).join(", "));
+    return true;
   }
+
+  // ---------- state ----------
+  let tabs = null;
+  const views = {
+    corp: {root: $("v-corp"), group: 0, range: "1M", income: false},
+    inc:  {root: $("v-inc"),  group: 1, range: "1Y", income: true},
+  };
+  for (const k in views){ try { const r = localStorage.getItem("tims-desk-range-"+k); if (RANGES.includes(r)) views[k].range = r; } catch(e){} }
+
+  function buildRangeButtons(key){
+    const v = views[key], box = v.root.querySelector(".ranges");
+    box.replaceChildren();
+    for (const r of RANGES){
+      const b = document.createElement("button"); b.type = "button"; b.textContent = r;
+      b.setAttribute("aria-pressed", String(r === v.range));
+      if (r === "1D" && !(tabs && tabs.intraday && tabs.intraday.length)){
+        b.disabled = true; b.title = "Needs intraday prices: add an Intraday tab to the sheet";
+      }
+      b.addEventListener("click", () => { v.range = r; try { localStorage.setItem("tims-desk-range-"+key, r); } catch(e){} renderView(key); });
+      box.append(b);
+    }
+  }
+
+  function renderView(key){
+    const v = views[key], root = v.root;
+    buildRangeButtons(key);
+    const groups = groupsFrom(tabs.current || []);
+    const rows = groups[v.group] || [];
+    const syms = rows.map(r => r.symbol.toUpperCase());
+    const colors = syms.map((_,i) => colorOf(i));
+    const empty = root.querySelector(".empty"), warn = root.querySelector(".note.warn");
+    const svg = root.querySelector("svg.chart"), tip = root.querySelector(".tip");
+    root.querySelector(".rng-h").textContent = v.range;
+
+    // pick the source for this range
+    let src = null;
+    if (v.range === "1D") src = wide(tabs.intraday);
+    else if (v.range === "5Y" && tabs.historyweekly && tabs.historyweekly.length) src = wide(tabs.historyweekly);
+    else src = wide(tabs.history);
+    const data = sliceRange(restrict(src, syms), v.range);
+
+    const missing = syms.filter(s => !(data && data.s[s] && data.s[s].filter(x=>x!=null).length >= 2));
+    const ok = data && syms.length ? drawChart(svg, tip, data, syms.filter(s => !missing.includes(s)), colors.filter((_,i)=>!missing.includes(syms[i])), "rebased") : false;
+    svg.hidden = !ok;
+    root.querySelector(".chart-wrap").hidden = !ok;
+    empty.hidden = ok;
+    if (!syms.length) empty.textContent = "No symbols in this group yet. Add them to the Current tab of your sheet, under a blank row.";
+    else if (!ok) empty.textContent = "No price history in the sheet yet for " + syms.join(", ") + ".";
+    root.querySelector(".ch-span").textContent = ok ? fmtDate(data.t[0], true, data.dateOnly) + " – " + fmtDate(data.t[data.t.length-1], true, data.dateOnly) : "";
+
+    const notes = [];
+    if (ok && missing.length) notes.push("No history yet for " + missing.join(", ") + ".");
+    if (ok && data.short) notes.push("Your sheet only has history back to " + fmtDate(data.earliest, true, true) + ", so " + v.range + " shows what's there.");
+    warn.textContent = notes.join(" "); warn.hidden = !notes.length;
+
+    // table
+    const tb = root.querySelector("tbody"); tb.replaceChildren();
+    const ylast = v.income ? lastYields(syms) : {};
+    rows.forEach((r, i) => {
+      const sym = syms[i];
+      const s = data && data.s[sym] ? data.s[sym].filter(x=>x!=null) : [];
+      const period = s.length >= 2 ? (s[s.length-1]/s[0]-1)*100 : null;
+      const day = num(r.change_pct);
+      const tr = document.createElement("tr");
+      const td = (text, c) => { const e = document.createElement("td"); e.textContent = text; if (c) e.className = c; tr.append(e); return e; };
+      const t0 = td("", "sym"); const sw = document.createElement("span"); sw.className = "sw"; sw.style.background = colors[i]; t0.append(sw, document.createTextNode(sym));
+      td(r.name || "", "nm").title = r.name || "";
+      td(num(r.price) == null ? "—" : fmtPx(num(r.price)) + (r.currency ? " " + r.currency : ""), "num" + (num(r.price) == null ? " na" : ""));
+      td(fmtPct(day), "num " + cls(day));
+      td(fmtPct(period), "num " + cls(period));
+      if (v.income){
+        const yt = num(r.yield_ttm), yd = num(r.yield_dist), y1 = ylast[sym];
+        td(yt == null ? "—" : yt.toFixed(2) + "%", "num" + (yt == null ? " na" : ""));
+        td(yd == null ? "—" : yd.toFixed(2) + "%", "num" + (yd == null ? " na" : ""));
+        td(y1 == null ? "—" : y1.toFixed(2) + "%", "num" + (y1 == null ? " na" : ""));
+      }
+      tb.append(tr);
+    });
+
+    if (v.income) renderYields(v, syms, colors);
+  }
+
+  function lastYields(syms){
+    const y = wide(tabs.yields); const out = {};
+    if (!y) return out;
+    const target = y.t[y.t.length-1] - 365*DAY;
+    let idx = y.t.findIndex(t => t >= target); if (idx < 0) return out;
+    if (y.t[0] > target + 20*DAY) return out;
+    for (const s of syms){ const v = y.s[s] && y.s[s][idx]; if (v != null) out[s] = v; }
+    return out;
+  }
+
+  function renderYields(v, syms, colors){
+    const y = wide(tabs.yields);
+    const data = sliceRange(restrict(y, syms), v.range === "1D" || v.range === "5D" ? "1M" : v.range);
+    const svg = $("ychart"), tip = $("ywrap").querySelector(".tip");
+    const have = syms.filter(s => data && data.s[s] && data.s[s].filter(x=>x!=null).length >= 2);
+    const ok = have.length ? drawChart(svg, tip, data, have, have.map(s => colors[syms.indexOf(s)]), "level") : false;
+    $("ywrap").hidden = !ok; $("yempty").hidden = ok;
+    $("yempty").textContent = "No yield history in the sheet yet. It needs a Yields tab (date plus one column per ETF).";
+    document.querySelector(".y-span").textContent = ok ? fmtDate(data.t[0], true, true) + " – " + fmtDate(data.t[data.t.length-1], true, true) + (v.range === "1D" || v.range === "5D" ? " (1M minimum)" : "") : "";
+  }
+
+  let rz = null;
+  window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (tabs){ renderView("corp"); renderView("inc"); } }, 150); });
+
+  function onSheet(text, storedAt){
+    tabs = parseTabs(text);
+    const asOf = (tabs.current || []).map(r => Date.parse(r.as_of || "")).filter(t=>!isNaN(t));
+    $("src-stamp").textContent = "Prices " + (asOf.length ? "as of " + rel(Math.max(...asOf)) : "loaded") + " · checked " + rel(storedAt);
+    $("global-fix").replaceChildren();
+    renderView("corp"); renderView("inc");
+  }
+
+  // ---------- connection + errors ----------
+  const FIX = {
+    needs_reauth:        {msg: "Your Google Drive sign-in expired. Reconnect it in claude.ai Settings → Connectors, then reload this page."},
+    server_not_connected:{msg: "Google Drive isn't connected for your account. Add it in claude.ai Settings → Connectors, then reload this page."},
+    selection_required:  {msg: "You have more than one Google Drive connection. Choose one when prompted, then reload."},
+    not_in_manifest:     {msg: "This page hasn't been allowed to read Google Drive yet (or it was turned off for this page).", allow: true},
+    consent_required:    {msg: "This page needs your OK to read your price sheet in Google Drive.", allow: true},
+    not_granted:         {msg: "This page hasn't been allowed to use your connectors yet.", allow: true},
+    blocked_by_policy:   {msg: "Your organization's settings block this Google Drive tool."},
+    approval_required:   {msg: "This Google Drive tool needs approval before the page can use it."},
+    capability_disabled: {msg: "Live data only works when this page is opened at claude.ai or in the Claude app."},
+  };
+  const permsP = window.claude?.use ? claude.use("permissions") : Promise.resolve(null);
+  let mcpRef = null;
+
+  function showFix(code){
+    const f = FIX[code]; const host = $("global-fix"); host.replaceChildren();
+    if (!f){ $("src-stamp").textContent = (tabs ? "Showing last loaded data · " : "") + "Sheet didn't load (" + (code || "error") + "). Tap Refresh."; return; }
+    const box = document.createElement("section"); box.className = "panel fix";
+    const p = document.createElement("div"); p.textContent = f.msg; box.append(p);
+    if (f.allow){
+      const b = document.createElement("button"); b.type = "button"; b.textContent = "Allow Google Drive";
+      b.addEventListener("click", async () => {
+        const perms = await permsP; let st = null;
+        if (perms){ try { st = (await perms.request(["mcp:" + DRIVE]))["mcp:" + DRIVE]; } catch(e){} }
+        if (st === "denied"){ p.textContent = "Drive access was declined for this page. Reload to be asked again."; return; }
+        $("src-stamp").textContent = "Retrying…"; if (mcpRef) mcpRef.invalidate(DRIVE).catch(()=>{});
+      });
+      box.append(b);
+    }
+    const c = document.createElement("code"); c.textContent = "reason: " + code; box.append(c);
+    host.append(box);
+    $("src-stamp").textContent = "Not connected";
+  }
+
+  $("refresh").addEventListener("click", () => {
+    if (!mcpRef) return;
+    $("src-stamp").textContent = "Refreshing…";
+    mcpRef.invalidate(DRIVE, READ).catch(()=>{});
+  });
+
+  (window.claude?.use ? claude.use("mcp") : Promise.resolve(null)).then(mcp => {
+    mcpRef = mcp;
+    if (!mcp){ showFix("capability_disabled"); return; }
+    mcp.watchTool(DRIVE, READ, {fileId: SHEET_FILE_ID}, ev => {
+      if (ev.type === "error") return showFix(ev.error && ev.error.code);
+      const text = ev.result && ev.result.payload && ev.result.payload.fileContent;
+      if (!text){ $("src-stamp").textContent = "The sheet came back empty."; return; }
+      onSheet(text, (ev.result.cache && ev.result.cache.storedAt) || Date.now());
+    }, {refetchInterval: 5*60*1000});
+  });
+
 })();
 </script>
