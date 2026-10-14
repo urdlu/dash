@@ -59,15 +59,13 @@ Schedule: weekdays after the close, plus once before 6am PT. Cron is UTC — han
 
 ## What exists in the repo
 
-### Price job (GitHub Actions) — needs STEP 1 rewrite
-- `.github/workflows/fetch-prices.yml` → `scripts/fetch_prices.py` + `scripts/sheets_writer.py`. Cron `50 13,20 * * *` UTC (6:50am/1:50pm PDT; drifts 1 h in PST). `workflow_dispatch` for manual runs; `permissions: contents: write` for its data-commit step.
+### Price job (GitHub Actions) — STEP 1 done 2026-10-13
+- `.github/workflows/fetch-prices.yml` → `scripts/fetch_prices.py` + `scripts/sheets_writer.py`. Symbols + groups are read from the Current tab (no config file). Current is updated **cell by cell** (never cleared), so blank rows and hand edits survive. History / HistoryWeekly / Intraday / Yields are machine-owned and rewritten whole, **newest row first**.
+- Crons (UTC): `15 21 * * 1-5` full after close; `0 3,8 * * 2-6` overnight full backups (before 6am PT in both PDT/PST, survives GitHub's late firing); `*/30 13-20 * * 1-5` intraday (script exits outside 9:25–16:10 ET). `concurrency: prices`. `workflow_dispatch` input `mode` = full|intraday.
 - Auth: Google Cloud **service account** `tims-desk-price-writer@solid-linker-505403-j8.iam.gserviceaccount.com` (Editor on the Sheet), key in secret `GOOGLE_SERVICE_ACCOUNT_KEY`. No OAuth, no token expiry.
-- **Known problems (as of 2026-10-13):**
-  - Symbols are hard-coded in `config/tickers.json` (USD/CAD + 5 corp ETFs). It `clear_range("Current!A1:Z1000")` then rewrites — **this destroys the blank-row grouping and the income rows Tim added by hand.**
-  - Only writes Current + History (90 days). No HistoryWeekly / Intraday / Yields, no yield columns.
-  - **GitHub's scheduled runs fire hours late**: the 13:50 UTC slot has been running ~18:00–20:00 UTC, the 20:50 slot ~22:00–00:20 UTC. A "before 6am PT" run can't rely on a single on-time cron.
-- `data/prices.json`, `data/history/*.json` are committed by each run (debug record; the dashboard doesn't read them).
-- CoinGecko fetch path (with 429 backoff) kept for if crypto returns; crypto is off for now.
+- **GitHub's scheduled runs fire hours late** (observed 1–6 h), so the 30-min intraday cadence is best-effort.
+- **Connector truncation:** `read_file_content` returns only ~48 data rows per tab (and cuts cells at ~52 chars). Newest-first ordering means the dashboard gets the latest ~48 rows (History ≈ 2 months, HistoryWeekly/Yields ≈ 11 months, Intraday ≈ last 4 h). `download_file_content` with `exportMimeType: application/vnd.oasis.opendocument.spreadsheet` returns **every tab in full** (~58 KB ODS zip, base64) — the planned fix is for the dashboard to read that instead (parse client-side).
+- `data/prices.json`, `data/history/*.json` are committed by full runs (debug record; the dashboard doesn't read them). `morning_push.py` still reads the deleted `config/tickers.json` — switch it to `data/prices.json` in STEP 4.
 
 ### Morning push (built 2026-10-12, not yet live)
 - `scripts/morning_push.py` (stdlib only, no LLM) + `morning-push.yml` at repo root (**move to `.github/workflows/`**). Two UTC crons (12:55 / 13:55 weekdays); the script keeps only the one matching today's Vancouver offset → 5:55am PT year-round. Signals: 1-day move (≥1.5%, FX ≥0.5%), RSI(14) ≤30/≥70, 50-day SMA crossings, within 1% of 90-day high/low, stale-data warning (>40 h). Needs secret `NTFY_TOPIC`. Channel: ntfy.sh (decided earlier; STEP 4 says confirm with Tim).
@@ -88,7 +86,7 @@ Schedule: weekdays after the close, plus once before 6am PT. Cron is UTC — han
 
 **STEP 0 — orient** (this file, v4 saved to `reference/tim-desk.html`). ✅ 2026-10-13.
 
-**STEP 1 — price job matches the Sheet contract exactly.** Read symbols + groups from Current (preserve blank rows / `group` column); fill name/price/currency/change_pct/as_of/sample; income yields; History (~1y daily), HistoryWeekly (5y weekly), Intraday (today, 5-min), Yields (weekly TTM %, 5y). DST-proof schedule incl. a reliable pre-6am-PT run. Run once, read the Sheet back, show Tim a sample of each tab.
+**STEP 1 — price job matches the Sheet contract exactly.** Read symbols + groups from Current (preserve blank rows / `group` column); fill name/price/currency/change_pct/as_of/sample; income yields; History (~1y daily), HistoryWeekly (5y weekly), Intraday (today, 5-min), Yields (weekly TTM %, 5y). DST-proof schedule incl. a reliable pre-6am-PT run. Run once, read the Sheet back, show Tim a sample of each tab. ✅ 2026-10-13 (open: dashboard reads via ODS export to beat the ~48-row truncation — awaiting Tim's go).
 
 **STEP 2 — IBKR read-only via Flex Web Service** (not the live API). Activity Flex Query (Open Positions, Trades, Cash Report, Change in NAV; XML; Last Business Day) + Trade Confirmation Flex Query. Secrets (Tim sets them): `IBKR_FLEX_TOKEN`, `IBKR_FLEX_ACTIVITY_ID`, `IBKR_FLEX_TRADES_ID`. Job: `SendRequest` → poll `GetStatement` with backoff → parse XML → write **Positions** and **Trades** tabs to the same Sheet. Then a **Portfolio** panel (holdings, value, day change, recent trades) matching the design. Remind Tim **2 weeks before the token expires** (1-year life). Live API (IB Gateway + IBC + ib_async on a VPS) only if Tim asks later.
 
