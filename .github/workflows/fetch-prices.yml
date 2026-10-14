@@ -9,10 +9,8 @@ on:
     # GitHub fires schedules hours late (observed: 1-6 h). 03:00 and 08:00 UTC
     # are after the prior close and before 6am PT in both PDT and PST.
     - cron: "0 3,8 * * 2-6"
-    # Intraday (Current prices + Intraday tab) every 30 min. 13:00-20:30 UTC
-    # covers 9:30am-4pm ET in both EDT and EST; the script skips runs that
-    # land outside market hours. Must match INTRADAY_CRON in fetch_prices.py.
-    - cron: "*/30 13-20 * * 1-5"
+    # No intraday schedule (Tim: daily is enough). Full runs still write the
+    # last session's 5-min bars to the Intraday tab, so the 1D button works.
   workflow_dispatch:
     inputs:
       mode:

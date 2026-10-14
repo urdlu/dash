@@ -53,7 +53,7 @@ Tim's personal dashboard + investing automation. Goal: **low-cost, fully automat
 **Intraday** — `time` (ISO), then one column per symbol; today's 5-minute prices (turns on the 1D button).
 **Yields** — `date`, then one column per income ETF; weekly TTM yield %, up to 5 years, from distribution history.
 
-Schedule: weekdays after the close, plus once before 6am PT. Cron is UTC — handle PST/PDT (the two-cron + offset-check trick used by `morning-push.yml` works). Intraday every ~30 min in market hours only if it stays within free limits; otherwise tell Tim the trade-off.
+Schedule: weekdays after the close, plus once before 6am PT. Cron is UTC — handle PST/PDT (the two-cron + offset-check trick used by `morning-push.yml` works). **No intraday schedule** — Tim decided daily is enough (2026-10-13).
 
 ---
 
@@ -61,9 +61,9 @@ Schedule: weekdays after the close, plus once before 6am PT. Cron is UTC — han
 
 ### Price job (GitHub Actions) — STEP 1 done 2026-10-13
 - `.github/workflows/fetch-prices.yml` → `scripts/fetch_prices.py` + `scripts/sheets_writer.py`. Symbols + groups are read from the Current tab (no config file). Current is updated **cell by cell** (never cleared), so blank rows and hand edits survive. History / HistoryWeekly / Intraday / Yields are machine-owned and rewritten whole, **newest row first**.
-- Crons (UTC): `15 21 * * 1-5` full after close; `0 3,8 * * 2-6` overnight full backups (before 6am PT in both PDT/PST, survives GitHub's late firing); `*/30 13-20 * * 1-5` intraday (script exits outside 9:25–16:10 ET). `concurrency: prices`. `workflow_dispatch` input `mode` = full|intraday.
+- Crons (UTC): `15 21 * * 1-5` full after close; `0 3,8 * * 2-6` overnight full backups (before 6am PT in both PDT/PST, survives GitHub's late firing); no intraday cron (Tim: daily is enough). Full runs still fill the Intraday tab with the last session's 5-min bars. `concurrency: prices`. `workflow_dispatch` input `mode` = full|intraday.
 - Auth: Google Cloud **service account** `tims-desk-price-writer@solid-linker-505403-j8.iam.gserviceaccount.com` (Editor on the Sheet), key in secret `GOOGLE_SERVICE_ACCOUNT_KEY`. No OAuth, no token expiry.
-- **GitHub's scheduled runs fire hours late** (observed 1–6 h), so the 30-min intraday cadence is best-effort.
+- **GitHub's scheduled runs fire hours late** (observed 1–6 h); the overnight backups cover that.
 - **Connector truncation:** `read_file_content` returns only ~48 data rows per tab (and cuts cells at ~52 chars). Newest-first ordering means the dashboard gets the latest ~48 rows (History ≈ 2 months, HistoryWeekly/Yields ≈ 11 months, Intraday ≈ last 4 h). `download_file_content` with `exportMimeType: application/vnd.oasis.opendocument.spreadsheet` returns **every tab in full** (~58 KB ODS zip, base64) — the planned fix is for the dashboard to read that instead (parse client-side).
 - `data/prices.json`, `data/history/*.json` are committed by full runs (debug record; the dashboard doesn't read them). `morning_push.py` still reads the deleted `config/tickers.json` — switch it to `data/prices.json` in STEP 4.
 
