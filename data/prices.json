@@ -4,96 +4,96 @@
     "symbol": "HXS",
     "yahoo": "HXS.TO",
     "name": "Global X S&P 500 Index Corporate Class ETF",
-    "price": 113.84,
+    "price": 113.85,
     "currency": "CAD",
-    "change_pct": -1.0603,
-    "as_of": "2026-10-15T08:05:18Z"
+    "change_pct": 0.0088,
+    "as_of": "2026-10-15T23:40:06Z"
   },
   {
     "group": 1,
     "symbol": "HXT",
     "yahoo": "HXT.TO",
     "name": "Global X S&P/TSX 60 Index Corporate Class ETF",
-    "price": 95.72,
+    "price": 97.15,
     "currency": "CAD",
-    "change_pct": -0.8494,
-    "as_of": "2026-10-15T08:05:18Z"
+    "change_pct": 1.4939,
+    "as_of": "2026-10-15T23:40:06Z"
   },
   {
     "group": 1,
     "symbol": "HBB",
     "yahoo": "HBB.TO",
     "name": "Global X Canadian Select Universe Bond Index Corporate Class ETF",
-    "price": 49.81,
+    "price": 49.91,
     "currency": "CAD",
-    "change_pct": 0.1307,
-    "as_of": "2026-10-15T08:05:18Z"
+    "change_pct": 0.2108,
+    "as_of": "2026-10-15T23:40:06Z"
   },
   {
     "group": 1,
     "symbol": "HXCN",
     "yahoo": "HXCN.TO",
     "name": "Global X S&P/TSX Capped Composite Index Corporate Class ETF",
-    "price": 60.84,
+    "price": 61.78,
     "currency": "CAD",
-    "change_pct": -1.2177,
-    "as_of": "2026-10-15T08:05:18Z"
+    "change_pct": 1.5533,
+    "as_of": "2026-10-15T23:40:06Z"
   },
   {
     "group": 1,
     "symbol": "HXQ",
     "yahoo": "HXQ.TO",
     "name": "Global X Nasdaq-100 Index Corporate Class ETF",
-    "price": 122.77,
+    "price": 122.25,
     "currency": "CAD",
-    "change_pct": -1.886,
-    "as_of": "2026-10-15T08:05:18Z"
+    "change_pct": -0.4236,
+    "as_of": "2026-10-15T23:40:06Z"
   },
   {
     "group": 2,
     "symbol": "SPYI",
     "yahoo": "SPYI",
     "name": "Neos S&P 500(R) High Income ETF",
-    "price": 53.67,
+    "price": 53.82,
     "currency": "USD",
-    "change_pct": -0.8132,
-    "as_of": "2026-10-15T08:05:18Z",
-    "yield_ttm": 11.81,
-    "yield_dist": 11.94
+    "change_pct": 0.2795,
+    "as_of": "2026-10-15T23:40:06Z",
+    "yield_ttm": 11.78,
+    "yield_dist": 11.91
   },
   {
     "group": 2,
     "symbol": "QQQI",
     "yahoo": "QQQI",
     "name": "NEOS NASDAQ-100(R) High Income ETF",
-    "price": 54.92,
+    "price": 54.9,
     "currency": "USD",
-    "change_pct": -1.718,
-    "as_of": "2026-10-15T08:05:18Z",
-    "yield_ttm": 13.91,
-    "yield_dist": 13.85
+    "change_pct": -0.0364,
+    "as_of": "2026-10-15T23:40:06Z",
+    "yield_ttm": 13.92,
+    "yield_dist": 13.86
   },
   {
     "group": 2,
     "symbol": "JEPI",
     "yahoo": "JEPI",
     "name": "JPMorgan Equity Premium Income ETF",
-    "price": 56.87,
+    "price": 57.16,
     "currency": "USD",
-    "change_pct": -0.1054,
-    "as_of": "2026-10-15T08:05:18Z",
-    "yield_ttm": 8.02,
-    "yield_dist": 7.2
+    "change_pct": 0.5099,
+    "as_of": "2026-10-15T23:40:06Z",
+    "yield_ttm": 7.98,
+    "yield_dist": 7.16
   },
   {
     "group": 2,
     "symbol": "JEPQ",
     "yahoo": "JEPQ",
     "name": "JPMorgan Nasdaq Equity Premium Income ETF",
-    "price": 60.09,
+    "price": 60.1,
     "currency": "USD",
-    "change_pct": -1.3624,
-    "as_of": "2026-10-15T08:05:18Z",
+    "change_pct": 0.0166,
+    "as_of": "2026-10-15T23:40:06Z",
     "yield_ttm": 11.46,
     "yield_dist": 11.32
   },
@@ -102,11 +102,11 @@
     "symbol": "SCHD",
     "yahoo": "SCHD",
     "name": "Schwab U.S. Dividend Equity ETF",
-    "price": 33.71,
+    "price": 34.1,
     "currency": "USD",
-    "change_pct": 1.0189,
-    "as_of": "2026-10-15T08:05:18Z",
-    "yield_ttm": 3.13,
-    "yield_dist": 3.17
+    "change_pct": 1.1569,
+    "as_of": "2026-10-15T23:40:06Z",
+    "yield_ttm": 3.09,
+    "yield_dist": 3.13
   }
 ]
