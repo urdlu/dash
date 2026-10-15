@@ -1,6 +1,6 @@
 # WS sync on Google Apps Script
 
-Replaces the laptop desktop task. Runs hourly inside **wstradesws@gmail.com**, free, no OAuth tokens to expire, no Claude tokens.
+Replaces the laptop desktop task. Runs daily (5-6am PT) inside **wstradesws@gmail.com**, free, no OAuth tokens to expire, no Claude tokens.
 
 The parser is a line-for-line port of `legacy/ws-sync/ws_parser.py` + `_to_row`, parity-tested against the Python on 18 email variants (fills, partials, options, multi-leg, exercise, dividends, transfers, FX, deposits, wires, ignored, odd dates, unicode junk) plus body extraction from plain/HTML/mislabeled parts — identical output on all.
 
@@ -11,7 +11,7 @@ The parser is a line-for-line port of `legacy/ws-sync/ws_parser.py` + `_to_row`,
 3. ⚙️ **Project Settings** → tick **Show "appsscript.json" manifest file** → back in the editor, open `appsscript.json` and replace it with the one in this folder (this turns on the Gmail advanced service and sets the Vancouver timezone).
 4. Optional phone alerts: ⚙️ Project Settings → **Script Properties** → add `NTFY_TOPIC` = your ntfy topic (same one as the morning push).
 5. In the function dropdown pick **`dryRun`** → **Run** → approve the permission prompts ("unverified app" → Advanced → Go to WS Sync). Check the log: it lists what it *would* add.
-6. Pick **`setup`** → **Run**. That does the first real sync and installs the hourly trigger.
+6. Pick **`setup`** → **Run**. That does the first real sync and installs the daily 5am trigger.
 7. **Turn off the old WS sync scheduled task** in the Claude desktop app, or both will write to the sheet.
 
 ## Notes

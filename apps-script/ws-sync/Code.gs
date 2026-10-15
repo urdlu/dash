@@ -607,12 +607,13 @@ function notify_(title, message, tags) {
   } catch (e) { Logger.log('ntfy failed: ' + e); }
 }
 
-/** Run once: authorizes, does a first sync, and installs an hourly trigger. */
+/** Run once: authorizes, does a first sync, and installs a daily trigger
+ *  (5-6am in the project's timezone, America/Vancouver). Re-running replaces it. */
 function setup() {
   ScriptApp.getProjectTriggers().forEach(function (t) {
     if (t.getHandlerFunction() === 'syncWsTransactions') ScriptApp.deleteTrigger(t);
   });
-  ScriptApp.newTrigger('syncWsTransactions').timeBased().everyHours(1).create();
+  ScriptApp.newTrigger('syncWsTransactions').timeBased().everyDays(1).atHour(5).create();
   syncWsTransactions();
 }
 

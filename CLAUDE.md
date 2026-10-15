@@ -79,7 +79,7 @@ Schedule: weekdays after the close, plus once before 6am PT. Cron is UTC — han
 
 ### Wealthsimple email sync
 - **Old:** Python (`legacy/ws-sync/`, secrets scrubbed) running as a Claude desktop scheduled task on the laptop; Gmail `wstradesws@gmail.com` → Sheet **"WS Transactions Log"** (ID `15JYrY5pq1D9Xe6wbL-f3G5GOn_0ggNeaqR1uCBic8Kw`), "Untitled" tab. Needs the laptop, burns tokens, OAuth app was in Testing mode (7-day tokens; it was later published to Production, but the desktop-task problems remain).
-- **New — LIVE since 2026-10-14:** `apps-script/ws-sync/` (project "WS Sync" in wstradesws@gmail.com, hourly trigger installed by `setup`; seed run found 75/75 trades already logged, 0 missing) — Apps Script port, parity-tested against the Python (`test/parity_test.py`, 18/18 identical). Hourly time-driven trigger in wstradesws@gmail.com; state in hidden `_ws_sync_state` tab; first run de-dupes against existing log rows. Optional ntfy on new trades via Script Property `NTFY_TOPIC`. Parsing rules must stay identical to `ws_parser.py` (incl. multi-leg "Options strategy:" fills).
+- **New — LIVE since 2026-10-14:** `apps-script/ws-sync/` (project "WS Sync" in wstradesws@gmail.com, daily 5-6am PT trigger installed by `setup`; seed run found 75/75 trades already logged, 0 missing) — Apps Script port, parity-tested against the Python (`test/parity_test.py`, 18/18 identical). Hourly time-driven trigger in wstradesws@gmail.com; state in hidden `_ws_sync_state` tab; first run de-dupes against existing log rows. Optional ntfy on new trades via Script Property `NTFY_TOPIC`. Parsing rules must stay identical to `ws_parser.py` (incl. multi-leg "Options strategy:" fills).
 - Old desktop task `ws-transactions-sync` **paused** 2026-10-14 (not deleted; re-enable only if the Apps Script version is abandoned — never run both).
 
 ### Other cloud tasks
@@ -96,7 +96,7 @@ Schedule: weekdays after the close, plus once before 6am PT. Cron is UTC — han
 
 **STEP 2 — IBKR read-only via Flex Web Service** (not the live API). Activity Flex Query (Open Positions, Trades, Cash Report, Change in NAV; XML; Last Business Day) + Trade Confirmation Flex Query. Secrets (Tim sets them): `IBKR_FLEX_TOKEN`, `IBKR_FLEX_ACTIVITY_ID`, `IBKR_FLEX_TRADES_ID`. Job: `SendRequest` → poll `GetStatement` with backoff → parse XML → write **Positions** and **Trades** tabs to the same Sheet. Then a **Portfolio** panel (holdings, value, day change, recent trades) matching the design. Remind Tim **2 weeks before the token expires** (1-year life). Live API (IB Gateway + IBC + ib_async on a VPS) only if Tim asks later.
 
-**STEP 3 — WS sync off the laptop.** ✅ 2026-10-14. Apps Script live hourly; laptop task paused. Phone alert on new trades waits for STEP 4's channel (Script Property `NTFY_TOPIC`).
+**STEP 3 — WS sync off the laptop.** ✅ 2026-10-14. Apps Script live, daily 5-6am PT; laptop task paused. Phone alert on new trades waits for STEP 4's channel (Script Property `NTFY_TOPIC`).
 
 **STEP 4 — morning phone push** before 6am PT with rule-based suggestions (labelled as suggestions). Ask Tim which channel (ntfy / Pushover / Telegram) — ntfy.sh was chosen earlier and `morning_push.py` already targets it.
 
