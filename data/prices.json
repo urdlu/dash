@@ -7,7 +7,7 @@
     "price": 113.84,
     "currency": "CAD",
     "change_pct": -1.0603,
-    "as_of": "2026-10-14T23:54:33Z"
+    "as_of": "2026-10-15T08:05:18Z"
   },
   {
     "group": 1,
@@ -17,7 +17,7 @@
     "price": 95.72,
     "currency": "CAD",
     "change_pct": -0.8494,
-    "as_of": "2026-10-14T23:54:33Z"
+    "as_of": "2026-10-15T08:05:18Z"
   },
   {
     "group": 1,
@@ -27,7 +27,7 @@
     "price": 49.81,
     "currency": "CAD",
     "change_pct": 0.1307,
-    "as_of": "2026-10-14T23:54:33Z"
+    "as_of": "2026-10-15T08:05:18Z"
   },
   {
     "group": 1,
@@ -37,7 +37,7 @@
     "price": 60.84,
     "currency": "CAD",
     "change_pct": -1.2177,
-    "as_of": "2026-10-14T23:54:33Z"
+    "as_of": "2026-10-15T08:05:18Z"
   },
   {
     "group": 1,
@@ -47,7 +47,7 @@
     "price": 122.77,
     "currency": "CAD",
     "change_pct": -1.886,
-    "as_of": "2026-10-14T23:54:33Z"
+    "as_of": "2026-10-15T08:05:18Z"
   },
   {
     "group": 2,
@@ -57,7 +57,7 @@
     "price": 53.67,
     "currency": "USD",
     "change_pct": -0.8132,
-    "as_of": "2026-10-14T23:54:33Z",
+    "as_of": "2026-10-15T08:05:18Z",
     "yield_ttm": 11.81,
     "yield_dist": 11.94
   },
@@ -69,7 +69,7 @@
     "price": 54.92,
     "currency": "USD",
     "change_pct": -1.718,
-    "as_of": "2026-10-14T23:54:33Z",
+    "as_of": "2026-10-15T08:05:18Z",
     "yield_ttm": 13.91,
     "yield_dist": 13.85
   },
@@ -81,7 +81,7 @@
     "price": 56.87,
     "currency": "USD",
     "change_pct": -0.1054,
-    "as_of": "2026-10-14T23:54:33Z",
+    "as_of": "2026-10-15T08:05:18Z",
     "yield_ttm": 8.02,
     "yield_dist": 7.2
   },
@@ -93,7 +93,7 @@
     "price": 60.09,
     "currency": "USD",
     "change_pct": -1.3624,
-    "as_of": "2026-10-14T23:54:33Z",
+    "as_of": "2026-10-15T08:05:18Z",
     "yield_ttm": 11.46,
     "yield_dist": 11.32
   },
@@ -105,7 +105,7 @@
     "price": 33.71,
     "currency": "USD",
     "change_pct": 1.0189,
-    "as_of": "2026-10-14T23:54:33Z",
+    "as_of": "2026-10-15T08:05:18Z",
     "yield_ttm": 3.13,
     "yield_dist": 3.17
   }
