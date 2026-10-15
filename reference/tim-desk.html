@@ -88,6 +88,13 @@ td.num{font-family:var(--f-mono)}
 .stat .v small{font-size:.75rem;color:var(--muted);font-weight:400}
 .banner{margin:12px 18px 0;padding:8px 12px;border-radius:6px;background:var(--warn-bg);color:var(--warn-ink);font-size:.82rem}
 td.side-b{color:var(--up);font-weight:600} td.side-s{color:var(--down);font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px 8px;padding:12px 18px 0}
+.chip{font-size:.75rem;border:1px solid var(--line);border-radius:999px;padding:3px 10px;color:var(--muted);font-variant-numeric:tabular-nums}
+.chip b{font-family:var(--f-mono);font-weight:500}
+.pill{display:inline-block;font-size:.68rem;letter-spacing:.04em;text-transform:uppercase;border-radius:4px;padding:1px 6px;background:var(--accent-soft);color:var(--accent)}
+.pill.warn{background:var(--warn-bg);color:var(--warn-ink)}
+td.legs{text-align:left;color:var(--muted);font-family:var(--f-mono);font-size:.78rem}
+.area{opacity:.12}
 @media (max-width:560px){ td.nm{display:none} th.nm{display:none} }
 </style>
 
@@ -120,6 +127,28 @@ td.side-b{color:var(--up);font-weight:600} td.side-s{color:var(--down);font-weig
       <thead><tr><th>Date</th><th>Side</th><th>Symbol</th><th>Qty</th><th>Price</th><th>Net</th></tr></thead>
       <tbody id="port-tr"></tbody>
     </table></div>
+  </section>
+
+  <section class="panel" id="v-opt" aria-labelledby="opt-h" hidden>
+    <div class="ph">
+      <div><span class="eyebrow">Wealthsimple · USD · before fees</span><h2 id="opt-h">Options journey</h2></div>
+      <span class="stamp" id="opt-stamp"></span>
+    </div>
+    <div class="stats" id="opt-stats"></div>
+    <div class="chips" id="opt-chips"></div>
+    <div class="chart-head"><span class="ch-title">Cumulative P&amp;L of closed trades, plus open positions at today's prices</span><span class="ch-span" id="opt-span"></span></div>
+    <div class="chart-wrap" id="opt-wrap"><svg class="chart" id="opt-chart" role="img"></svg><div class="tip" hidden></div></div>
+    <div class="subhead">Open trades</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Trade</th><th class="nm">Legs</th><th>Opened</th><th>Paid / received</th><th>Worth now</th><th>P&amp;L</th></tr></thead>
+      <tbody id="opt-open"></tbody>
+    </table></div>
+    <div class="subhead">Recently closed</div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Trade</th><th>Opened</th><th>Closed</th><th>How</th><th>P&amp;L</th></tr></thead>
+      <tbody id="opt-closed"></tbody>
+    </table></div>
+    <div class="note" id="opt-note"></div>
   </section>
 
   <section class="panel" id="v-corp" aria-labelledby="corp-h">
@@ -592,8 +621,122 @@ td.side-b{color:var(--up);font-weight:600} td.side-s{color:var(--down);font-weig
     $("port-tr-h").hidden = $("port-tr-wrap").hidden = !trades.length;
   }
 
+  // ---------- options journey (OptionsSummary / OptionTrades tabs, from scripts/options_pnl.py) ----------
+  const usd = n => n == null ? "—" : (n < 0 ? "−" : n > 0 ? "+" : "") + "$" + Math.abs(n).toLocaleString("en-CA",{maximumFractionDigits:0});
+  const usd2 = n => n == null ? "—" : (n < 0 ? "−$" : "$") + Math.abs(n).toLocaleString("en-CA",{minimumFractionDigits:2,maximumFractionDigits:2});
+  const KIND = {income: "Premium selling", spread: "Spreads", long: "Long calls / LEAPS"};
+
+  function renderOptions(){
+    const root = $("v-opt");
+    const sm = {}; (tabs.optionssummary || []).forEach(r => { if (r.metric) sm[r.metric] = r.value; });
+    const trades = (tabs.optiontrades || []).filter(t => t.underlying);
+    if (!trades.length){ root.hidden = true; return; }
+    root.hidden = false;
+
+    const stats = $("opt-stats"); stats.replaceChildren();
+    const stat = (k, v, c, extra) => {
+      const d = document.createElement("div"); d.className = "stat";
+      const a = document.createElement("span"); a.className = "k"; a.textContent = k;
+      const b = document.createElement("span"); b.className = "v" + (c ? " " + c : ""); b.textContent = v;
+      if (extra){ const x = document.createElement("small"); x.textContent = " " + extra; b.append(x); }
+      d.append(a, b); stats.append(d);
+    };
+    const net = num(sm.net_pnl), real = num(sm.realized_pnl), unreal = num(sm.unrealized_pnl);
+    stat("Net P&L", usd(net), cls(net));
+    stat("Realized", usd(real), cls(real), (sm.trades_closed || "0") + " closed");
+    stat("Open positions", usd(unreal), cls(unreal), (sm.trades_open || "0") + " open");
+    stat("Win rate", sm.win_rate_pct ? sm.win_rate_pct + "%" : "—", "", (sm.wins || 0) + "W / " + (sm.losses || 0) + "L");
+
+    const chips = $("opt-chips"); chips.replaceChildren();
+    for (const k of ["income", "spread", "long"]){
+      const v = num(sm[k + "_pnl"]); if (v == null) continue;
+      const c = document.createElement("span"); c.className = "chip";
+      const b = document.createElement("b"); b.textContent = usd(v); b.className = cls(v);
+      c.append(document.createTextNode(KIND[k] + " "), b); chips.append(c);
+    }
+    const asOf = Date.parse(sm.as_of || "");
+    $("opt-stamp").textContent = (sm.first_trade ? "since " + sm.first_trade : "") + (isNaN(asOf) ? "" : " · updated " + rel(asOf));
+
+    // cumulative realized P&L by close date, then a final point that adds open positions
+    const closed = trades.filter(t => t.status !== "open" && t.closed).sort((a, b) => a.closed.localeCompare(b.closed));
+    const pts = []; let run = 0;
+    for (const t of closed){ run += num(t.pnl) || 0; const ms = Date.parse(t.closed + "T12:00:00Z");
+      if (pts.length && pts[pts.length-1].t === ms) pts[pts.length-1].v = run; else pts.push({t: ms, v: run}); }
+    const svg = $("opt-chart"), tip = $("opt-wrap").querySelector(".tip");
+    drawPnl(svg, tip, pts, net);
+    $("opt-span").textContent = pts.length ? fmtDate(pts[0].t, true, true) + " – today" : "";
+
+    // open trades, biggest absolute P&L first
+    const ob = $("opt-open"); ob.replaceChildren();
+    trades.filter(t => t.status === "open").sort((a, b) => Math.abs(num(b.pnl)) - Math.abs(num(a.pnl))).forEach(t => {
+      const tr = document.createElement("tr");
+      const td = (text, c) => { const e = document.createElement("td"); e.textContent = text; if (c) e.className = c; tr.append(e); return e; };
+      const first = td("", "sym"); first.append(document.createTextNode(t.underlying + " "));
+      const sp = document.createElement("span"); sp.className = "pill"; sp.textContent = t.strategy; first.append(sp);
+      const near = (t.short_legs || "").split("; ").filter(Boolean).some(l => { const p = l.split("|"); return +p[1] <= 3 || +p[2] <= 7; });
+      if (near){ const w = document.createElement("span"); w.className = "pill warn"; w.textContent = "watch"; w.title = "A short leg is within 3% of its strike or 7 days of expiry"; first.append(" ", w); }
+      td(t.open_legs || "", "legs nm").title = t.marks ? "Priced from: " + t.marks : "Priced at the option-chain mid";
+      td(t.opened, "num");
+      td(usd2(num(t.cash)), "num");
+      td(usd2(num(t.open_value)), "num");
+      const p = num(t.pnl); td(usd(p), "num " + cls(p));
+      ob.append(tr);
+    });
+
+    // last 12 closed trades
+    const cb = $("opt-closed"); cb.replaceChildren();
+    closed.slice().reverse().slice(0, 12).forEach(t => {
+      const tr = document.createElement("tr");
+      const td = (text, c) => { const e = document.createElement("td"); e.textContent = text; if (c) e.className = c; tr.append(e); return e; };
+      const first = td("", "sym"); first.append(document.createTextNode(t.underlying + " "));
+      const sp = document.createElement("span"); sp.className = "pill"; sp.textContent = t.strategy; first.append(sp);
+      td(t.opened, "num"); td(t.closed, "num");
+      td({closed: "Closed", expired: "Expired", assigned: "Assigned"}[t.status] || t.status);
+      const p = num(t.pnl); td(usd(p), "num " + cls(p));
+      cb.append(tr);
+    });
+    $("opt-note").textContent = sm.note || "";
+  }
+
+  function drawPnl(svg, tip, pts, net){
+    svg.replaceChildren(); tip.hidden = true;
+    const wrap = svg.parentElement;
+    if (pts.length < 2){ wrap.hidden = true; return; }
+    wrap.hidden = false;
+    const avail = wrap.clientWidth ? wrap.clientWidth - 36 : 720;
+    const W = Math.max(300, Math.round(avail)), narrow = W < 520;
+    const H = narrow ? 200 : 240, padL = narrow ? 56 : 64, padR = narrow ? 112 : 136, padT = 12, padB = 26;
+    svg.setAttribute("viewBox", `0 0 ${W} ${H}`);
+    const now = Date.now(), t0 = pts[0].t, t1 = Math.max(now, pts[pts.length-1].t + DAY);
+    const vals = pts.map(p => p.v).concat([0, net == null ? 0 : net]);
+    let lo = Math.min(...vals), hi = Math.max(...vals); const pad = (hi - lo) * .08 || 100; lo -= pad; hi += pad;
+    const x = t => padL + (t - t0) / (t1 - t0) * (W - padL - padR);
+    const y = v => padT + (hi - v) / (hi - lo) * (H - padT - padB);
+    for (const v of niceTicks(lo, hi, 4)){
+      svg.append(el("line",{x1:padL,x2:W-padR,y1:y(v),y2:y(v),class: Math.abs(v) < 1e-9 ? "zero-l" : "grid-l"}));
+      svg.append(el("text",{x:padL-8,y:y(v)+4,"text-anchor":"end",class:"axis"}, usd(v).replace("+","")));
+    }
+    svg.append(el("text",{x:padL,y:H-6,class:"axis"}, fmtDate(t0, true, true)));
+    svg.append(el("text",{x:W-padR,y:H-6,"text-anchor":"end",class:"axis"}, "today"));
+    // step line: P&L only changes when a trade closes
+    let d = `M${x(t0).toFixed(1)} ${y(0).toFixed(1)}`;
+    for (const p of pts) d += ` H${x(p.t).toFixed(1)} V${y(p.v).toFixed(1)}`;
+    d += ` H${x(now).toFixed(1)}`;
+    const last = pts[pts.length-1].v, col = last >= 0 ? "var(--up)" : "var(--down)";
+    svg.append(el("path",{d: d + ` V${y(0).toFixed(1)} H${x(t0).toFixed(1)} Z`, fill: col, class: "area"}));
+    svg.append(el("path",{d, class:"line", stroke: col}));
+    svg.append(el("text",{x:W-padR+8,y:y(last)+4,class:"endlbl"}, "closed " + usd(last)));
+    if (net != null){
+      svg.append(el("line",{x1:x(now),x2:x(now),y1:y(last),y2:y(net),stroke:"var(--muted)","stroke-dasharray":"3 3"}));
+      svg.append(el("circle",{cx:x(now),cy:y(net),r:4,fill: net >= 0 ? "var(--up)" : "var(--down)",class:"hdot"}));
+      const ny = Math.abs(y(net) - y(last)) < 13 ? y(net) + (net < last ? 13 : -13) : y(net);
+      svg.append(el("text",{x:W-padR+8,y:ny+4,class:"endlbl"}, "with open " + usd(net)));
+    }
+    svg.setAttribute("aria-label", "Cumulative options P&L: closed trades " + usd(last) + ", including open positions " + usd(net));
+  }
+
   let rz = null;
-  window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (tabs){ renderView("corp"); renderView("inc"); } }, 150); });
+  window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (tabs){ renderView("corp"); renderView("inc"); try { renderOptions(); } catch(e){} } }, 150); });
 
   let haveFull = false;
   function onSheet(parsed, storedAt, full){
@@ -603,6 +746,7 @@ td.side-b{color:var(--up);font-weight:600} td.side-s{color:var(--down);font-weig
     $("global-fix").replaceChildren();
     renderView("corp"); renderView("inc");
     try { renderPortfolio(); } catch(e){ $("v-port").hidden = true; }
+    try { renderOptions(); } catch(e){ $("v-opt").hidden = true; }
   }
 
   // ---------- connection + errors ----------

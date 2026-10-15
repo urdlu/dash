@@ -26,7 +26,7 @@ Tim's personal dashboard + investing automation. Goal: **low-cost, fully automat
 
 ---
 
-## The dashboard (artifact v6)
+## The dashboard (artifact v7)
 
 - Reads the Sheet **"Tim's Desk Prices"** (ID `1rKLxaCrsAkvYPAff77JrOjBbfr3ix2CmClVhx7td03c`) through Tim's claude.ai Google Drive connector (`read_file_content`), refetched every 5 min while open. **No tokens per refresh.**
 - The page parses the connector's markdown-table text client-side (`parseTabs`): one `### Sheet Name: X` section per tab, tab names lower-cased. Fragile by nature (not a stable contract) but accepted.
@@ -73,9 +73,16 @@ Schedule: weekdays after the close, plus once before 6am PT. Cron is UTC — han
 - First real run 2026-10-14: works; account unfunded (NAV CA$1, no positions/trades yet), token 335 days left.
 - Dashboard v6 has the **Portfolio** panel (top of page): Net value / Day change / Cash / Holdings, token-expiry banner, holdings table (biggest first), last 10 trades. Column names are IBKR Flex attribute names — re-check against real rows after Tim's first trade.
 
-### Morning push (built 2026-10-12, not yet live)
-- `scripts/morning_push.py` (stdlib only, no LLM) + `morning-push.yml` at repo root (**move to `.github/workflows/`**). Two UTC crons (12:55 / 13:55 weekdays); the script keeps only the one matching today's Vancouver offset → 5:55am PT year-round. Signals: 1-day move (≥1.5%, FX ≥0.5%), RSI(14) ≤30/≥70, 50-day SMA crossings, within 1% of 90-day high/low, stale-data warning (>40 h). Needs secret `NTFY_TOPIC`. Channel: ntfy.sh (decided earlier; STEP 4 says confirm with Tim).
-- Built against the old 6-symbol Current tab — re-check it against the v4 Sheet contract before turning on.
+### Options journey (STEP 4 add-on, built 2026-10-15)
+- `scripts/options_pnl.py` reads the **WS Transactions Log** (needs the sheet shared with the service account as Viewer): the `activities-export-*` tab (complete, OCC symbols, up to its "As of" line) + the trade-email `Untitled` tab after that. Fills → events → union-find on contract keys → one row per trade (rolls/spreads/open+close chained). P&L = cash flows + open legs at Yahoo option-chain mid (fallback last, then intrinsic "est."); expired = worthless; assignments closed at intrinsic on the day. USD, before fees.
+- Writes `OptionsSummary` (metric,value) and `OptionTrades` (newest first; `short_legs` = "SYM K P/C exp|room %|days left" per open short leg) to the Prices sheet. Runs in the morning-push workflow (before the push) and after full price runs (continue-on-error).
+- Dashboard v7 **Options journey** panel: net / realized / open / win rate, P&L by kind (premium selling, spreads, long calls/LEAPS), cumulative realized step chart + "with open" point, open trades (watch pill when a short leg is ≤3% from strike or ≤7 days), last 12 closed.
+- First local run 2026-10-15: 46 trades (34 closed, 12 open), net about −$28.6k (realized −$9.2k, open −$19.4k mostly GOOG LEAPS).
+
+### Morning push (STEP 4)
+- `.github/workflows/morning-push.yml` → `scripts/options_pnl.py` then `scripts/morning_push.py` (reads the Sheet via service account; no LLM). Two UTC crons 12:55/13:55 weekdays; only the one matching Vancouver's offset sends → 5:55am PT. Channel: **ntfy** (Tim chose 2026-10-15), secret `NTFY_TOPIC`; without it the job only prints.
+- Message: rule-based suggestions (ETF big move / RSI / 50-day cross / 3-month high-low, distribution vs TTM yield gap, short options near strike or expiry), options P&L line, IBKR NAV/day change, Wealthsimple trades since yesterday 6am PT, ETF table, stale-data warning.
+- The WS Apps Script also pings ntfy on new trades if Script Property `NTFY_TOPIC` is set.
 
 ### Wealthsimple email sync
 - **Old:** Python (`legacy/ws-sync/`, secrets scrubbed) running as a Claude desktop scheduled task on the laptop; Gmail `wstradesws@gmail.com` → Sheet **"WS Transactions Log"** (ID `15JYrY5pq1D9Xe6wbL-f3G5GOn_0ggNeaqR1uCBic8Kw`), "Untitled" tab. Needs the laptop, burns tokens, OAuth app was in Testing mode (7-day tokens; it was later published to Production, but the desktop-task problems remain).
@@ -98,6 +105,6 @@ Schedule: weekdays after the close, plus once before 6am PT. Cron is UTC — han
 
 **STEP 3 — WS sync off the laptop.** ✅ 2026-10-14. Apps Script live, daily 5-6am PT; laptop task paused. Phone alert on new trades waits for STEP 4's channel (Script Property `NTFY_TOPIC`).
 
-**STEP 4 — morning phone push** before 6am PT with rule-based suggestions (labelled as suggestions). Ask Tim which channel (ntfy / Pushover / Telegram) — ntfy.sh was chosen earlier and `morning_push.py` already targets it.
+**STEP 4 — morning phone push** before 6am PT with rule-based suggestions (labelled as suggestions). Built 2026-10-15 (ntfy) + Options journey; waiting on Tim: ntfy topic secret, sharing WS log with the service account.
 
 Still open: where the Income Screener code lives / whether it joins this repo.

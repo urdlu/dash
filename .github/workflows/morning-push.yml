@@ -1,0 +1,47 @@
+name: Morning push
+
+on:
+  schedule:
+    # Target: 5:55am America/Vancouver, weekdays.
+    # 12:55 UTC = 5:55 PDT, 13:55 UTC = 5:55 PST. Both fire; the script
+    # checks which one matches today's offset and skips the other, so this
+    # survives the DST switch with no edits.
+    - cron: "55 12 * * 1-5"
+    - cron: "55 13 * * 1-5"
+  workflow_dispatch: {}  # manual "Run workflow" for testing
+
+permissions:
+  contents: read
+
+concurrency:
+  group: morning-push
+  cancel-in-progress: false
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - run: pip install -r requirements.txt
+
+      # Fresh options P&L first (picks up trades the 5am WS sync just logged).
+      # A failure here must not stop the push.
+      - name: Update options P&L
+        continue-on-error: true
+        env:
+          GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+          CRON_SCHEDULE: ${{ github.event.schedule }}
+        run: python scripts/options_pnl.py
+
+      - name: Build and send the ntfy push
+        env:
+          GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
+          NTFY_TOPIC: ${{ secrets.NTFY_TOPIC }}
+          CRON_SCHEDULE: ${{ github.event.schedule }}
+        run: python scripts/morning_push.py
