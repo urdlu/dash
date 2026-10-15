@@ -66,6 +66,12 @@ Schedule: weekdays after the close, plus once before 6am PT. Cron is UTC — han
 - **Connector truncation:** `read_file_content` returns only ~48 data rows per tab (and cuts cells at ~52 chars). Newest-first ordering means the dashboard gets the latest ~48 rows (History ≈ 2 months, HistoryWeekly/Yields ≈ 11 months, Intraday ≈ last 4 h). `download_file_content` with `exportMimeType: application/vnd.oasis.opendocument.spreadsheet` returns **every tab in full** (~58 KB ODS zip, base64) — **the dashboard (v5, 2026-10-13) reads that**: it unzips the ODS with the browser's `DecompressionStream` and walks `content.xml` (`parseOds`), falling back to `read_file_content` + `parseTabs` only if the export fails (stamp then says "partial history").
 - `data/prices.json`, `data/history/*.json` are committed by full runs (debug record; the dashboard doesn't read them). `morning_push.py` still reads the deleted `config/tickers.json` — switch it to `data/prices.json` in STEP 4.
 
+### IBKR Flex job (STEP 2, built 2026-10-14 — waiting on Tim's IBKR setup + secrets)
+- `.github/workflows/ibkr-flex.yml` → `scripts/ibkr_flex.py` (stdlib HTTP/XML). Crons `30 10` + `0 13` UTC Tue–Sat (before 6am PT, with backup) and `45 21` UTC Mon–Fri (trade confirms). Exits quietly while secrets are unset.
+- Writes **Positions** (summary rows, one per holding), **Trades** (merged by `tradeID`, all history kept, newest first), **Account** (NAV, day change ex-deposits, cash, token days left, warning).
+- Token expiry: repo **variable** (not secret) `IBKR_TOKEN_EXPIRES=YYYY-MM-DD`; within 14 days → warning in Account tab + one GitHub issue "Renew the IBKR Flex token" (GitHub emails Tim).
+- Next: after the first real run, build the dashboard **Portfolio** panel from the real tab shapes.
+
 ### Morning push (built 2026-10-12, not yet live)
 - `scripts/morning_push.py` (stdlib only, no LLM) + `morning-push.yml` at repo root (**move to `.github/workflows/`**). Two UTC crons (12:55 / 13:55 weekdays); the script keeps only the one matching today's Vancouver offset → 5:55am PT year-round. Signals: 1-day move (≥1.5%, FX ≥0.5%), RSI(14) ≤30/≥70, 50-day SMA crossings, within 1% of 90-day high/low, stale-data warning (>40 h). Needs secret `NTFY_TOPIC`. Channel: ntfy.sh (decided earlier; STEP 4 says confirm with Tim).
 - Built against the old 6-symbol Current tab — re-check it against the v4 Sheet contract before turning on.
