@@ -1,0 +1,273 @@
+<title>Gap and Go Study</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Schibsted+Grotesk:wght@500;700;800&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a one-column research note — verdict up top, then evidence in the order you'd question it */
+:root{
+  --paper:#f3f5f6; --sheet:#ffffff; --ink:#18232b; --muted:#5d6a73; --rule:#d7dde1; --soft:#e9eef0;
+  --accent:#0f6b6e; --up:#1f7a4a; --down:#b23b2e; --flat:#8a959c; --hl:#fff4cf; --hl-ink:#6b4e00;
+  --f-display:"Schibsted Grotesk",system-ui,"Segoe UI",sans-serif;
+  --f-body:"Public Sans",system-ui,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#11171b; --sheet:#182127; --ink:#e3e9ec; --muted:#93a1a9; --rule:#2a363e; --soft:#1f2a31;
+  --accent:#5cc2c4; --up:#5cc68b; --down:#ee7c6c; --flat:#6f7d85; --hl:#3a3115; --hl-ink:#f1d68a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#11171b; --sheet:#182127; --ink:#e3e9ec; --muted:#93a1a9; --rule:#2a363e; --soft:#1f2a31;
+  --accent:#5cc2c4; --up:#5cc68b; --down:#ee7c6c; --flat:#6f7d85; --hl:#3a3115; --hl-ink:#f1d68a; color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6}
+main{max-width:860px;margin:0 auto;padding-inline:16px;padding-block:40px 64px;display:grid;gap:36px}
+h1,h2,h3{font-family:var(--f-display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(2rem,5vw,2.8rem);font-weight:800;letter-spacing:-.02em}
+h2{font-size:1.35rem;font-weight:700}
+h3{font-size:1rem;font-weight:700}
+p{margin:0;max-width:65ch}
+.kicker{font-family:var(--f-mono);font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.lede{color:var(--muted);font-size:1.05rem}
+header{display:grid;gap:12px}
+section{display:grid;gap:14px;min-width:0}
+.verdict{background:var(--sheet);border:1px solid var(--rule);border-radius:8px;padding:20px 22px;display:grid;gap:12px}
+.verdict ol{margin:0;padding-left:1.2em;display:grid;gap:8px}
+.verdict li::marker{font-family:var(--f-mono);color:var(--accent)}
+.fig{background:var(--sheet);border:1px solid var(--rule);border-radius:8px;padding:16px 16px 10px;display:grid;gap:8px;min-width:0}
+.fig .cap{font-size:.85rem;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:12px;height:3px;border-radius:2px;display:inline-block}
+.legend i.box{height:10px;width:10px}
+svg{width:100%;height:auto;display:block;overflow:visible}
+svg text{font-family:var(--f-mono);font-size:11px;fill:var(--muted)}
+svg .lbl{fill:var(--ink)}
+.tw{overflow-x:auto;min-width:0;border:1px solid var(--rule);border-radius:8px;background:var(--sheet)}
+table{border-collapse:collapse;width:100%;font-size:.85rem;font-variant-numeric:tabular-nums}
+th,td{padding:7px 12px;text-align:right;white-space:nowrap;border-bottom:1px solid var(--soft)}
+th{font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--soft)}
+th:first-child,td:first-child{text-align:left}
+td{font-family:var(--f-mono)}
+td:first-child{font-family:var(--f-body)}
+tr.group td{font-family:var(--f-display);font-weight:700;background:transparent;padding-top:14px;color:var(--ink)}
+.pos{color:var(--up)} .neg{color:var(--down)} .ns{color:var(--flat)}
+.sig{font-weight:600}
+td.hl{background:var(--hl);color:var(--hl-ink)}
+.note{font-size:.85rem;color:var(--muted)}
+.def{display:grid;grid-template-columns:max-content 1fr;gap:6px 16px;font-size:.92rem}
+.def dt{font-weight:600}
+.def dd{margin:0;color:var(--muted);min-width:0}
+ul.plain{margin:0;padding-left:1.1em;display:grid;gap:6px;max-width:65ch}
+footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--rule);padding-top:16px}
+@media (max-width:520px){ .def{grid-template-columns:1fr} .def dd{margin-bottom:6px} }
+</style>
+
+<main>
+  <header>
+    <span class="kicker">Research note · Phase A · daily data</span>
+    <h1>Gap and Go Study</h1>
+    <p class="lede">Do stocks that open with a big gap keep moving that way through the day and the following weeks? Tested on S&amp;P 500 stocks, <span id="period"></span>.</p>
+  </header>
+
+  <section class="verdict" aria-labelledby="v-h">
+    <h2 id="v-h">Short answer</h2>
+    <ol>
+      <li><b>On average, no.</b> A gap of any size, up or down, is followed by roughly the same return as the market from the open: the same day, the next day, and 5 or 20 days later. Gap size and later returns are essentially uncorrelated (rank correlation <span id="rho"></span>).</li>
+      <li><b>Volume is the one split that matters.</b> Gaps on 3× normal volume kept going the same day: <span id="hv-up"></span> for up gaps and <span id="hv-dn"></span> for down gaps, vs the market. Low-volume down gaps tended to bounce instead.</li>
+      <li><b>But that edge stays inside the gap day.</b> Daily data only tells you the day's volume after the close, and from the close onward those same stocks did nothing special. Whether you can spot the heavy-volume gaps early enough, from premarket or first-15-minute volume, is exactly what Phase B tests.</li>
+    </ol>
+    <p class="note">Gaps do not usually "fill": an up gap of 8% or more traded back to the prior close the same day only <span id="fill8"></span> of the time.</p>
+  </section>
+
+  <section aria-labelledby="m-h">
+    <h2 id="m-h">How it was measured</h2>
+    <dl class="def">
+      <dt>Universe</dt><dd><span id="nsym"></span> current S&amp;P 500 members, price ≥ $5, average daily dollar volume ≥ $5M, <span id="ndays"></span> stock-days.</dd>
+      <dt>Gap</dt><dd>Open vs the previous close. With daily bars this is the overnight and premarket move combined.</dd>
+      <dt>Entry</dt><dd>At the open of the gap day, and separately at its close (once the day's volume is known).</dd>
+      <dt>Returns</dt><dd>Stock minus SPY over the same window, then minus the stock's own average for that horizon. The second step removes the drift that comes from only including companies that are in the index today.</dd>
+      <dt>Volume</dt><dd>The gap day's volume divided by its 20-day average.</dd>
+      <dt>Earnings</dt><dd>Gap on the first session after a reported earnings date (Yahoo earnings calendar).</dd>
+      <dt>Significance</dt><dd>t-statistics use standard errors clustered by date, because gaps bunch up on macro news days. Treat |t| below 2 as noise. Results in grey are not significant.</dd>
+    </dl>
+  </section>
+
+  <section aria-labelledby="f1-h">
+    <h2 id="f1-h">Gap size alone predicts nothing</h2>
+    <div class="fig">
+      <svg id="chart-size" role="img" aria-label="Same-day return after the open by gap size"></svg>
+      <div class="legend"><span><i class="box" style="background:var(--up)"></i>Up gaps</span><span><i class="box" style="background:var(--down)"></i>Down gaps</span><span><i class="box" style="background:var(--flat)"></i>Not significant (|t| &lt; 2)</span></div>
+      <p class="cap">Open → close on the gap day, vs SPY and the stock's own average, in %. Bars are the average; whiskers are ±2 standard errors.</p>
+    </div>
+    <div class="tw"><table id="t-size"></table></div>
+  </section>
+
+  <section aria-labelledby="f2-h">
+    <h2 id="f2-h">Heavy volume: a strong same-day move, then nothing</h2>
+    <div class="fig">
+      <svg id="chart-path" role="img" aria-label="Average cumulative return from the open over 20 trading days, by volume"></svg>
+      <div class="legend">
+        <span><i style="background:var(--up)"></i>Up ≥4%, volume ≥3×</span>
+        <span><i style="background:var(--up);opacity:.45"></i>Up ≥4%, volume &lt;1.5×</span>
+        <span><i style="background:var(--down)"></i>Down ≥4%, volume ≥3×</span>
+        <span><i style="background:var(--down);opacity:.45"></i>Down ≥4%, volume &lt;1.5×</span>
+      </div>
+      <p class="cap">Average return from the gap day's open to the close of each following day, vs SPY and the stock's own average, in %. The whole separation happens on day 0; after that the lines run flat.</p>
+    </div>
+    <div class="tw"><table id="t-vol"></table></div>
+    <p class="note">Highlighted cells are the only results with |t| ≥ 2 that you could not act on in real time with daily data, because the day's total volume is only known at the close.</p>
+  </section>
+
+  <section aria-labelledby="f3-h">
+    <h2 id="f3-h">Other splits (gaps of 4% or more)</h2>
+    <p>Earnings gaps, the market regime and whether the whole market gapped don't change the picture. The two halves of the decade even point in opposite directions, which is what noise looks like.</p>
+    <div class="tw"><table id="t-split"></table></div>
+  </section>
+
+  <section aria-labelledby="c-h">
+    <h2 id="c-h">What this can't tell you</h2>
+    <ul class="plain">
+      <li><b>Survivorship.</b> Only today's index members are included. The own-average adjustment removes most of the effect, but companies that collapsed and left the index are missing entirely.</li>
+      <li><b>Large caps only.</b> The classic gap-and-go setup is small, low-float stocks with a news catalyst. These results say nothing about those, and free data for them is much worse.</li>
+      <li><b>Premarket is blended in.</b> A daily open can't separate after-hours, premarket and the opening auction, or tell you premarket volume.</li>
+      <li><b>Costs.</b> Figures are before costs. A round trip at the open in these stocks costs roughly <span id="cost"></span> in spread and slippage, more on the most volatile gap days.</li>
+      <li><b>Earnings timing.</b> Yahoo's calendar sometimes lacks the report time; those dates were matched to both possible sessions.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="n-h">
+    <h2 id="n-h">Phase B: test it with real premarket data</h2>
+    <ul class="plain">
+      <li>About 2 years of 1-minute bars including premarket (Polygon's free tier), for the same stocks.</li>
+      <li>Measure premarket volume and the first 5 and 15 minutes of regular-session volume, which are known early enough to act on.</li>
+      <li>Test whether those early volume readings pick out the heavy-volume gaps that kept moving, and how much of the move is left after the first 15 minutes.</li>
+    </ul>
+    <p class="note">This is research, not a trading recommendation. A positive Phase B result would be a hypothesis to paper-trade first.</p>
+  </section>
+
+  <footer>Generated from <code>research/gap_study/analyze.py</code> · data: Yahoo Finance daily bars and earnings calendar · <span id="gen"></span></footer>
+</main>
+
+<script>
+(function(){
+  "use strict";
+  const R = __DATA__;
+  const $ = id => document.getElementById(id);
+  const P = R.params;
+  const fmt = (v, dp=2) => v == null ? "—" : (v > 0 ? "+" : v < 0 ? "−" : "") + Math.abs(v).toFixed(dp) + "%";
+  const sig = c => c && Math.abs(c.t) >= 2;
+  const cls = c => !c ? "ns" : !sig(c) ? "ns" : c.mean > 0 ? "pos sig" : "neg sig";
+
+  $("period").textContent = P.start.slice(0,4) + " to " + P.end.slice(0,4);
+  $("nsym").textContent = P.symbols;
+  $("ndays").textContent = P.stock_days.toLocaleString("en-CA");
+  $("cost").textContent = (P.cost_bps / 100).toFixed(2) + "%";
+  $("rho").textContent = R.corr.h0.toFixed(2);
+  $("gen").textContent = "data through " + P.end;
+  const vol = side => R.splits[side].rvol;
+  $("hv-up").textContent = fmt(vol("up")[2].d0.mean);
+  $("hv-dn").textContent = fmt(vol("down")[2].d0.mean);
+  const b8 = R.buckets.find(b => b.label.startsWith("+8"));
+  $("fill8").textContent = Math.round(b8.fill) + "%";
+
+  // ---------- tables ----------
+  const COLS = [["d0","Same day"],["c1","+1 day"],["c5","+5 days"],["c20","+20 days"]];
+  function table(el, groups, hlFn){
+    const t = $(el); t.replaceChildren();
+    const thead = t.createTHead().insertRow();
+    ["", "Gaps", ...COLS.map(c => c[1]), "Filled same day"].forEach((h, i) => {
+      const th = document.createElement("th"); th.textContent = h; thead.append(th);
+    });
+    const tb = t.createTBody();
+    const note = t.createTHead().insertRow(); note.remove();
+    for (const [gname, rows] of groups){
+      if (gname){ const r = tb.insertRow(); r.className = "group"; const c = r.insertCell(); c.colSpan = 7; c.textContent = gname; }
+      for (const b of rows){
+        const r = tb.insertRow();
+        r.insertCell().textContent = b.label;
+        r.insertCell().textContent = b.n.toLocaleString("en-CA");
+        COLS.forEach(([k]) => {
+          const c = r.insertCell(), v = b[k];
+          c.textContent = v ? fmt(v.mean) : "—";
+          c.className = cls(v);
+          if (v) c.title = "t = " + v.t.toFixed(1) + " · median " + fmt(v.median) + " · " + v.hit.toFixed(0) + "% beat the market";
+          if (hlFn && hlFn(b, k)) c.classList.add("hl");
+        });
+        r.insertCell().textContent = b.fill == null ? "—" : Math.round(b.fill) + "%";
+      }
+    }
+    const cap = t.createCaption(); cap.hidden = true; cap.textContent = "Returns vs SPY and the stock's own average. From the open for the same day; from the gap day's close for later columns. Hover a cell for t-stat, median and hit rate.";
+  }
+  table("t-size", [["", [R.baseline]], ["Up gaps", R.buckets.filter(b => b.label.startsWith("+"))], ["Down gaps", R.buckets.filter(b => !b.label.startsWith("+"))]]);
+  table("t-vol", [["Up gaps ≥4%", vol("up")], ["Down gaps ≥4%", vol("down")]], (b, k) => k === "d0" && b.label.startsWith("3×") && sig(b.d0));
+  const sp = s => R.splits[s];
+  const splitRows = s => [...(sp(s).earn || []), ...sp(s).regime, ...sp(s).market];
+  table("t-split", [["Up gaps ≥4%", splitRows("up")], ["Down gaps ≥4%", splitRows("down")], ["By period", R.periods]]);
+
+  // ---------- charts (sized to their container so labels stay at true size) ----------
+  const NS = "http://www.w3.org/2000/svg";
+  const el = (tag, a, txt) => { const e = document.createElementNS(NS, tag); for (const k in a) e.setAttribute(k, a[k]); if (txt != null) e.textContent = txt; return e; };
+  function ticks(lo, hi, n){
+    const raw = (hi - lo) / n, mag = Math.pow(10, Math.floor(Math.log10(raw)));
+    const step = [1,2,2.5,5,10].map(f => f*mag).find(s => s >= raw);
+    const out = []; for (let v = Math.ceil(lo/step)*step; v <= hi + 1e-9; v += step) out.push(+v.toFixed(4)); return out;
+  }
+  const W = svg => Math.max(300, Math.round(svg.parentElement.clientWidth - 32));
+
+  function sizeChart(){
+    const svg = $("chart-size"); svg.replaceChildren();
+    const w = W(svg), h = 230, pl = 46, pr = 10, pt = 10, pb = 34;
+    svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+    const rows = [...R.buckets.filter(b => b.label.startsWith("−")).reverse(), ...R.buckets.filter(b => b.label.startsWith("+"))];
+    const vals = rows.flatMap(b => [b.d0.mean - 2*b.d0.se, b.d0.mean + 2*b.d0.se]);
+    let lo = Math.min(-0.6, ...vals), hi = Math.max(0.6, ...vals);
+    const y = v => pt + (hi - v) / (hi - lo) * (h - pt - pb);
+    for (const t of ticks(lo, hi, 4)){
+      svg.append(el("line", {x1: pl, x2: w - pr, y1: y(t), y2: y(t), stroke: t === 0 ? "var(--flat)" : "var(--soft)", "stroke-width": 1}));
+      svg.append(el("text", {x: pl - 6, y: y(t) + 4, "text-anchor": "end"}, (t > 0 ? "+" : "") + t.toFixed(1) + "%"));
+    }
+    const bw = (w - pl - pr) / rows.length;
+    rows.forEach((b, i) => {
+      const cx = pl + bw * (i + .5), m = b.d0.mean, up = b.label.startsWith("+");
+      const fill = sig(b.d0) ? (up ? "var(--up)" : "var(--down)") : "var(--flat)";
+      svg.append(el("rect", {x: cx - bw*.28, width: bw*.56, y: Math.min(y(m), y(0)), height: Math.max(1, Math.abs(y(m) - y(0))), fill, rx: 2}));
+      svg.append(el("line", {x1: cx, x2: cx, y1: y(m - 2*b.d0.se), y2: y(m + 2*b.d0.se), stroke: "var(--ink)", "stroke-width": 1}));
+      svg.append(el("text", {x: cx, y: h - pb + 16, "text-anchor": "middle", class: "lbl"}, b.label.replace(" or more", "+")));
+    });
+    svg.append(el("text", {x: pl, y: h - 4}, "Gap at the open"));
+  }
+
+  function pathChart(){
+    const svg = $("chart-path"); svg.replaceChildren();
+    const w = W(svg), narrow = w < 520, h = narrow ? 240 : 280, pl = 46, pr = narrow ? 64 : 84, pt = 10, pb = 28;
+    svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+    const series = [
+      {b: vol("up")[2], c: "var(--up)", o: 1, name: "Up, ≥3×"},
+      {b: vol("up")[0], c: "var(--up)", o: .45, name: "Up, <1.5×"},
+      {b: vol("down")[0], c: "var(--down)", o: .45, name: "Down, <1.5×"},
+      {b: vol("down")[2], c: "var(--down)", o: 1, name: "Down, ≥3×"},
+    ];
+    const n = series[0].b.dpath.length;
+    const all = series.flatMap(s => s.b.dpath);
+    let lo = Math.min(0, ...all) - .2, hi = Math.max(0, ...all) + .2;
+    const x = i => pl + i / (n - 1) * (w - pl - pr);
+    const y = v => pt + (hi - v) / (hi - lo) * (h - pt - pb);
+    for (const t of ticks(lo, hi, 5)){
+      svg.append(el("line", {x1: pl, x2: w - pr, y1: y(t), y2: y(t), stroke: t === 0 ? "var(--flat)" : "var(--soft)", "stroke-width": 1}));
+      svg.append(el("text", {x: pl - 6, y: y(t) + 4, "text-anchor": "end"}, (t > 0 ? "+" : "") + t.toFixed(1) + "%"));
+    }
+    [0, 5, 10, 15, 20].filter(i => i < n).forEach(i => svg.append(el("text", {x: x(i), y: h - 8, "text-anchor": i === 0 ? "start" : "middle"}, i === 0 ? "day 0" : "+" + i)));
+    const ends = [];
+    for (const s of series){
+      const d = s.b.dpath.map((v, i) => (i ? "L" : "M") + x(i).toFixed(1) + " " + y(v).toFixed(1)).join(" ");
+      svg.append(el("path", {d, fill: "none", stroke: s.c, "stroke-width": 2.2, "stroke-opacity": s.o, "stroke-linejoin": "round"}));
+      svg.append(el("circle", {cx: x(0), cy: y(s.b.dpath[0]), r: 3.5, fill: s.c, "fill-opacity": s.o}));
+      ends.push({s, yy: y(s.b.dpath[n - 1]), v: s.b.dpath[n - 1]});
+    }
+    ends.sort((a, b) => a.yy - b.yy);
+    for (let k = 1; k < ends.length; k++) if (ends[k].yy - ends[k-1].yy < 13) ends[k].yy = ends[k-1].yy + 13;
+    for (const e of ends) svg.append(el("text", {x: w - pr + 6, y: e.yy + 4, class: "lbl"}, fmt(e.v, 1)));
+  }
+
+  function draw(){ sizeChart(); pathChart(); }
+  draw();
+  let t = null; window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(draw, 150); });
+})();
+</script>
