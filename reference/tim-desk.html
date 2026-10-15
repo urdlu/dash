@@ -72,6 +72,7 @@ td:last-child,th:last-child{padding-right:18px}
 tbody tr+tr td{border-top:1px solid var(--line)}
 td.sym{font-family:var(--f-mono);font-weight:500}
 td.sym .sw{margin-right:8px;vertical-align:0}
+th.nm{text-align:left}
 td.nm{text-align:left;color:var(--muted);max-width:280px;overflow:hidden;text-overflow:ellipsis}
 td.num{font-family:var(--f-mono)}
 .upc{color:var(--up)} .dnc{color:var(--down)} .na{color:var(--muted)}
@@ -80,6 +81,13 @@ td.num{font-family:var(--f-mono)}
 .fix{display:grid;gap:8px;padding:18px;color:var(--ink);font-size:.9rem}
 .fix code{font-family:var(--f-mono);font-size:.75rem;color:var(--muted)}
 .fix button{justify-self:start;font:inherit;font-size:.85rem;font-weight:600;border:0;border-radius:6px;padding:7px 14px;background:var(--accent);color:var(--panel);cursor:pointer}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--line);border-bottom:1px solid var(--line)}
+.stat{background:var(--panel);padding:12px 18px}
+.stat .k{display:block;font-size:.7rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.stat .v{display:block;font-family:var(--f-mono);font-size:1.15rem;font-weight:500;font-variant-numeric:tabular-nums;margin-top:2px}
+.stat .v small{font-size:.75rem;color:var(--muted);font-weight:400}
+.banner{margin:12px 18px 0;padding:8px 12px;border-radius:6px;background:var(--warn-bg);color:var(--warn-ink);font-size:.82rem}
+td.side-b{color:var(--up);font-weight:600} td.side-s{color:var(--down);font-weight:600}
 @media (max-width:560px){ td.nm{display:none} th.nm{display:none} }
 </style>
 
@@ -94,6 +102,25 @@ td.num{font-family:var(--f-mono)}
     <a id="sheet-link" href="https://docs.google.com/spreadsheets/d/1rKLxaCrsAkvYPAff77JrOjBbfr3ix2CmClVhx7td03c/edit" target="_blank" rel="noopener">Open sheet</a>
   </div>
   <div id="global-fix"></div>
+
+  <section class="panel" id="v-port" aria-labelledby="port-h" hidden>
+    <div class="ph">
+      <div><span class="eyebrow">IBKR · read-only</span><h2 id="port-h">Portfolio</h2></div>
+      <span class="stamp" id="port-stamp"></span>
+    </div>
+    <div class="stats" id="port-stats"></div>
+    <div class="banner" id="port-warn" hidden></div>
+    <div class="empty" id="port-empty" hidden></div>
+    <div class="tbl-wrap" id="port-pos-wrap" hidden><table>
+      <thead><tr><th>Symbol</th><th class="nm">Description</th><th>Qty</th><th>Last</th><th>Value</th><th>Unrealized</th><th>% of NAV</th></tr></thead>
+      <tbody id="port-pos"></tbody>
+    </table></div>
+    <div class="subhead" id="port-tr-h" hidden>Recent trades</div>
+    <div class="tbl-wrap" id="port-tr-wrap" hidden><table>
+      <thead><tr><th>Date</th><th>Side</th><th>Symbol</th><th>Qty</th><th>Price</th><th>Net</th></tr></thead>
+      <tbody id="port-tr"></tbody>
+    </table></div>
+  </section>
 
   <section class="panel" id="v-corp" aria-labelledby="corp-h">
     <div class="ph">
@@ -484,6 +511,87 @@ td.num{font-family:var(--f-mono)}
     document.querySelector(".y-span").textContent = ok ? fmtDate(data.t[0], true, true) + " – " + fmtDate(data.t[data.t.length-1], true, true) + (v.range === "1D" || v.range === "5D" ? " (1M minimum)" : "") : "";
   }
 
+  // ---------- portfolio (Positions / Trades / Account tabs, written by the IBKR Flex job) ----------
+  // IBKR dates come as yyyyMMdd, optionally ";HHmmss" (or "," / " " separators).
+  function ibDate(v){
+    const m = String(v || "").match(/^(\d{4})-?(\d{2})-?(\d{2})(?:[;, T]+(\d{2}):?(\d{2}))?/);
+    if (!m) return v || "";
+    return m[1] + "-" + m[2] + "-" + m[3] + (m[4] ? " " + m[4] + ":" + m[5] : "");
+  }
+  const money = (n, cur) => n == null ? "—" : n.toLocaleString("en-CA",{minimumFractionDigits:2,maximumFractionDigits:2}) + (cur ? " " + cur : "");
+  const signed = (n, cur) => n == null ? "—" : (n > 0 ? "+" : n < 0 ? "−" : "") + money(Math.abs(n), cur);
+
+  function renderPortfolio(){
+    const root = $("v-port");
+    const acct = (tabs.account || []).filter(r => r.account || r.nav);
+    const pos = (tabs.positions || []).filter(r => r.symbol);
+    const trades = (tabs.trades || []).filter(r => r.symbol);
+    if (!tabs.account && !tabs.positions){ root.hidden = true; return; }
+    root.hidden = false;
+
+    // headline numbers (sum across accounts; each row is one IBKR account, in its base currency)
+    const stats = $("port-stats"); stats.replaceChildren();
+    const cur = acct.length ? acct[0].currency : "";
+    const sum = k => { const v = acct.map(r => num(r[k])).filter(x => x != null); return v.length ? v.reduce((a,b)=>a+b,0) : null; };
+    const nav = sum("nav"), chg = sum("change"), start = sum("nav_start"), cash = sum("cash");
+    const pct = chg != null && start ? chg / start * 100 : null;
+    const stat = (k, v, c, extra) => {
+      const d = document.createElement("div"); d.className = "stat";
+      const a = document.createElement("span"); a.className = "k"; a.textContent = k;
+      const b = document.createElement("span"); b.className = "v" + (c ? " " + c : ""); b.textContent = v;
+      if (extra){ const sm = document.createElement("small"); sm.textContent = " " + extra; b.append(sm); }
+      d.append(a, b); stats.append(d);
+    };
+    stat("Net value", money(nav, cur));
+    stat("Day change", signed(chg, cur), cls(chg), pct == null ? "" : fmtPct(pct));
+    stat("Cash", money(cash, cur));
+    stat("Holdings", String(pos.length));
+
+    const a0 = acct[0] || {};
+    const to = a0.period_to ? ibDate(a0.period_to) : "";
+    const asOf = Date.parse(a0.as_of || "");
+    $("port-stamp").textContent = (to ? "statement " + to : "") + (isNaN(asOf) ? "" : " · pulled " + rel(asOf));
+
+    const warns = acct.map(r => r.warning).filter(Boolean);
+    $("port-warn").textContent = warns[0] || ""; $("port-warn").hidden = !warns.length;
+
+    // holdings, biggest first
+    const tb = $("port-pos"); tb.replaceChildren();
+    pos.sort((x, y) => Math.abs(num(y.positionValue) || 0) - Math.abs(num(x.positionValue) || 0)).forEach(r => {
+      const tr = document.createElement("tr");
+      const td = (text, c) => { const e = document.createElement("td"); e.textContent = text; if (c) e.className = c; tr.append(e); return e; };
+      const opt = r.putCall ? " " + r.putCall + " " + (r.strike || "") + (r.expiry ? " " + ibDate(r.expiry) : "") : "";
+      td(r.symbol + opt, "sym");
+      td(r.description || "", "nm").title = r.description || "";
+      td((num(r.position) ?? "—").toLocaleString("en-CA"), "num");
+      td(money(num(r.markPrice), ""), "num");
+      td(money(num(r.positionValue), r.currency), "num");
+      const u = num(r.fifoPnlUnrealized); td(signed(u, ""), "num " + cls(u));
+      const pn = num(r.percentOfNAV); td(pn == null ? "—" : pn.toFixed(2) + "%", "num");
+      tb.append(tr);
+    });
+    $("port-pos-wrap").hidden = !pos.length;
+    const empty = $("port-empty");
+    empty.hidden = pos.length > 0;
+    empty.textContent = acct.length ? "No positions yet. Holdings appear here the morning after your first buy (same-day trades show under Recent trades after the close)." : "No IBKR data in the sheet yet.";
+
+    // last 10 trades (the tab is newest-first already; sort anyway)
+    const tt = $("port-tr"); tt.replaceChildren();
+    trades.slice().sort((x, y) => String(y.dateTime || y.tradeDate).localeCompare(String(x.dateTime || x.tradeDate))).slice(0, 10).forEach(r => {
+      const tr = document.createElement("tr");
+      const td = (text, c) => { const e = document.createElement("td"); e.textContent = text; if (c) e.className = c; tr.append(e); return e; };
+      td(ibDate(r.dateTime || r.tradeDate), "num");
+      const side = (r.buySell || "").toUpperCase();
+      td(side, side.startsWith("B") ? "side-b" : side.startsWith("S") ? "side-s" : "");
+      td(r.symbol + (r.putCall ? " " + r.putCall + " " + (r.strike || "") : ""), "sym");
+      td((num(r.quantity) ?? "—").toLocaleString("en-CA"), "num");
+      td(money(num(r.tradePrice) ?? num(r.price), ""), "num");
+      const net = num(r.netCash) ?? num(r.amount); td(signed(net, r.currency), "num " + cls(net));
+      tt.append(tr);
+    });
+    $("port-tr-h").hidden = $("port-tr-wrap").hidden = !trades.length;
+  }
+
   let rz = null;
   window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (tabs){ renderView("corp"); renderView("inc"); } }, 150); });
 
@@ -494,6 +602,7 @@ td.num{font-family:var(--f-mono)}
     $("src-stamp").textContent = "Prices " + (asOf.length ? "as of " + rel(Math.max(...asOf)) : "loaded") + " · checked " + rel(storedAt) + (full ? "" : " · partial history (fallback read)");
     $("global-fix").replaceChildren();
     renderView("corp"); renderView("inc");
+    try { renderPortfolio(); } catch(e){ $("v-port").hidden = true; }
   }
 
   // ---------- connection + errors ----------

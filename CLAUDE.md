@@ -26,7 +26,7 @@ Tim's personal dashboard + investing automation. Goal: **low-cost, fully automat
 
 ---
 
-## The dashboard (artifact v5)
+## The dashboard (artifact v6)
 
 - Reads the Sheet **"Tim's Desk Prices"** (ID `1rKLxaCrsAkvYPAff77JrOjBbfr3ix2CmClVhx7td03c`) through Tim's claude.ai Google Drive connector (`read_file_content`), refetched every 5 min while open. **No tokens per refresh.**
 - The page parses the connector's markdown-table text client-side (`parseTabs`): one `### Sheet Name: X` section per tab, tab names lower-cased. Fragile by nature (not a stable contract) but accepted.
@@ -70,7 +70,8 @@ Schedule: weekdays after the close, plus once before 6am PT. Cron is UTC — han
 - `.github/workflows/ibkr-flex.yml` → `scripts/ibkr_flex.py` (stdlib HTTP/XML). Crons `30 10` + `0 13` UTC Tue–Sat (before 6am PT, with backup) and `45 21` UTC Mon–Fri (trade confirms). Exits quietly while secrets are unset.
 - Writes **Positions** (summary rows, one per holding), **Trades** (merged by `tradeID`, all history kept, newest first), **Account** (NAV, day change ex-deposits, cash, token days left, warning).
 - Token expiry: `IBKR_TOKEN_EXPIRES=YYYY-MM-DD` (Tim set it as a secret; the workflow reads a variable or a secret); within 14 days → warning in Account tab + one GitHub issue "Renew the IBKR Flex token" (GitHub emails Tim).
-- Next: after the first real run, build the dashboard **Portfolio** panel from the real tab shapes.
+- First real run 2026-10-14: works; account unfunded (NAV CA$1, no positions/trades yet), token 335 days left.
+- Dashboard v6 has the **Portfolio** panel (top of page): Net value / Day change / Cash / Holdings, token-expiry banner, holdings table (biggest first), last 10 trades. Column names are IBKR Flex attribute names — re-check against real rows after Tim's first trade.
 
 ### Morning push (built 2026-10-12, not yet live)
 - `scripts/morning_push.py` (stdlib only, no LLM) + `morning-push.yml` at repo root (**move to `.github/workflows/`**). Two UTC crons (12:55 / 13:55 weekdays); the script keeps only the one matching today's Vancouver offset → 5:55am PT year-round. Signals: 1-day move (≥1.5%, FX ≥0.5%), RSI(14) ≤30/≥70, 50-day SMA crossings, within 1% of 90-day high/low, stale-data warning (>40 h). Needs secret `NTFY_TOPIC`. Channel: ntfy.sh (decided earlier; STEP 4 says confirm with Tim).
