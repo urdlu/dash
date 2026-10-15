@@ -69,7 +69,7 @@ Schedule: weekdays after the close, plus once before 6am PT. Cron is UTC — han
 ### IBKR Flex job (STEP 2, built 2026-10-14 — waiting on Tim's IBKR setup + secrets)
 - `.github/workflows/ibkr-flex.yml` → `scripts/ibkr_flex.py` (stdlib HTTP/XML). Crons `30 10` + `0 13` UTC Tue–Sat (before 6am PT, with backup) and `45 21` UTC Mon–Fri (trade confirms). Exits quietly while secrets are unset.
 - Writes **Positions** (summary rows, one per holding), **Trades** (merged by `tradeID`, all history kept, newest first), **Account** (NAV, day change ex-deposits, cash, token days left, warning).
-- Token expiry: repo **variable** (not secret) `IBKR_TOKEN_EXPIRES=YYYY-MM-DD`; within 14 days → warning in Account tab + one GitHub issue "Renew the IBKR Flex token" (GitHub emails Tim).
+- Token expiry: `IBKR_TOKEN_EXPIRES=YYYY-MM-DD` (Tim set it as a secret; the workflow reads a variable or a secret); within 14 days → warning in Account tab + one GitHub issue "Renew the IBKR Flex token" (GitHub emails Tim).
 - Next: after the first real run, build the dashboard **Portfolio** panel from the real tab shapes.
 
 ### Morning push (built 2026-10-12, not yet live)

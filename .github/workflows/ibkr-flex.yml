@@ -38,7 +38,7 @@ jobs:
           IBKR_FLEX_TOKEN: ${{ secrets.IBKR_FLEX_TOKEN }}
           IBKR_FLEX_ACTIVITY_ID: ${{ secrets.IBKR_FLEX_ACTIVITY_ID }}
           IBKR_FLEX_TRADES_ID: ${{ secrets.IBKR_FLEX_TRADES_ID }}
-          IBKR_TOKEN_EXPIRES: ${{ vars.IBKR_TOKEN_EXPIRES }}
+          IBKR_TOKEN_EXPIRES: ${{ vars.IBKR_TOKEN_EXPIRES || secrets.IBKR_TOKEN_EXPIRES }}
           GOOGLE_SERVICE_ACCOUNT_KEY: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_KEY }}
         run: python scripts/ibkr_flex.py
 
