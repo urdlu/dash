@@ -120,6 +120,7 @@ function schoolDigest() {
   var props = PropertiesService.getScriptProperties();
   var queue = JSON.parse(props.getProperty('SCHOOL_DIGEST') || '[]');
   if (!queue.length) { Logger.log('Digest: nothing queued.'); return; }
+  if (!props.getProperty('NTFY_TOPIC')) { Logger.log('Digest: ' + queue.length + ' queued, kept until NTFY_TOPIC is set.'); return; }
   var lines = queue.map(function (it) {
     var r = it.r;
     var who = r.who && r.who.length ? ' (' + r.who.join(', ') + ')' : '';
