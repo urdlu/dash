@@ -7,7 +7,7 @@
     "price": 113.85,
     "currency": "CAD",
     "change_pct": 0.0088,
-    "as_of": "2026-10-15T23:40:06Z"
+    "as_of": "2026-10-16T07:58:59Z"
   },
   {
     "group": 1,
@@ -17,7 +17,7 @@
     "price": 97.15,
     "currency": "CAD",
     "change_pct": 1.4939,
-    "as_of": "2026-10-15T23:40:06Z"
+    "as_of": "2026-10-16T07:58:59Z"
   },
   {
     "group": 1,
@@ -27,7 +27,7 @@
     "price": 49.91,
     "currency": "CAD",
     "change_pct": 0.2108,
-    "as_of": "2026-10-15T23:40:06Z"
+    "as_of": "2026-10-16T07:58:59Z"
   },
   {
     "group": 1,
@@ -37,7 +37,7 @@
     "price": 61.78,
     "currency": "CAD",
     "change_pct": 1.5533,
-    "as_of": "2026-10-15T23:40:06Z"
+    "as_of": "2026-10-16T07:58:59Z"
   },
   {
     "group": 1,
@@ -47,7 +47,7 @@
     "price": 122.25,
     "currency": "CAD",
     "change_pct": -0.4236,
-    "as_of": "2026-10-15T23:40:06Z"
+    "as_of": "2026-10-16T07:58:59Z"
   },
   {
     "group": 2,
@@ -57,7 +57,7 @@
     "price": 53.82,
     "currency": "USD",
     "change_pct": 0.2795,
-    "as_of": "2026-10-15T23:40:06Z",
+    "as_of": "2026-10-16T07:58:59Z",
     "yield_ttm": 11.78,
     "yield_dist": 11.91
   },
@@ -69,7 +69,7 @@
     "price": 54.9,
     "currency": "USD",
     "change_pct": -0.0364,
-    "as_of": "2026-10-15T23:40:06Z",
+    "as_of": "2026-10-16T07:58:59Z",
     "yield_ttm": 13.92,
     "yield_dist": 13.86
   },
@@ -81,7 +81,7 @@
     "price": 57.16,
     "currency": "USD",
     "change_pct": 0.5099,
-    "as_of": "2026-10-15T23:40:06Z",
+    "as_of": "2026-10-16T07:58:59Z",
     "yield_ttm": 7.98,
     "yield_dist": 7.16
   },
@@ -93,7 +93,7 @@
     "price": 60.1,
     "currency": "USD",
     "change_pct": 0.0166,
-    "as_of": "2026-10-15T23:40:06Z",
+    "as_of": "2026-10-16T07:58:59Z",
     "yield_ttm": 11.46,
     "yield_dist": 11.32
   },
@@ -105,7 +105,7 @@
     "price": 34.1,
     "currency": "USD",
     "change_pct": 1.1569,
-    "as_of": "2026-10-15T23:40:06Z",
+    "as_of": "2026-10-16T07:58:59Z",
     "yield_ttm": 3.09,
     "yield_dist": 3.13
   }
