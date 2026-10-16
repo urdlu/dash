@@ -197,11 +197,12 @@ def ws_section():
             t = datetime.strptime(r["Date"].strip(), "%Y-%m-%d %H:%M").replace(tzinfo=timezone.utc)
         except (KeyError, ValueError):
             continue
-        if t >= since and r.get("Type") not in ("order_cancelled",):
+        typ = r.get("Type", "")
+        if t >= since and ("fill" in typ or "assignment" in typ):  # trades only, not deposits/dividends
             recent.append(r)
     if not recent:
         return []
-    out = [f"Wealthsimple: {len(recent)} new since {since:%a}"]
+    out = [f"Wealthsimple: {len(recent)} trade{'s' if len(recent) != 1 else ''} since {since:%a}"]
     for r in recent[:5]:
         out.append(f"  {r.get('Detail', '')[:70]}")
     if len(recent) > 5:
