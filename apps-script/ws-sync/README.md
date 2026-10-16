@@ -21,3 +21,13 @@ The parser is a line-for-line port of `legacy/ws-sync/ws_parser.py` + `_to_row`,
 - **Failures** send an ntfy push (if `NTFY_TOPIC` is set), and Google also emails trigger failures to wstradesws.
 - New rows are appended oldest-first (the Python appended newest-first).
 - If you change parsing rules, change them here and in the Python reference together, and rerun the parity test in `test/`.
+
+## School & Guides digest (`School.gs`, same project)
+
+Reads emails Tim's Gmail filters forward here from school/Guides senders (`SCHOOL_SENDERS`), plus their PDF attachments and read-only links (PDFs, Sway, Google Docs/Drive, sd44.ca pages - never RSVP/confirm/unsubscribe links), and asks Claude whether each matters to Tim or the kids.
+
+- Urgent (today / within ~2 days) -> ntfy push right away; other relevant items -> one digest at 7pm PT; irrelevant -> dropped.
+- Script Properties: `ANTHROPIC_API_KEY`, `NTFY_TOPIC`, `FAMILY` (kids' names, grades, schools, Guides unit - kept out of the repo on purpose).
+- Setup: add a file `School.gs` to the project, paste this file, save, run **`setupSchool`** once (approve the new Gmail permission). It installs an hourly `schoolCheck` and a daily `schoolDigest`.
+- State: Script Properties `SCHOOL_SEEN` (message ids, 10 days) and `SCHOOL_DIGEST` (queued items).
+- Sway pages are built by JavaScript; the script reads what the page exposes and the summary says when something couldn't be read.

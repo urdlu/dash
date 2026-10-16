@@ -89,6 +89,11 @@ Schedule: weekdays after the close, plus once before 6am PT. Cron is UTC — han
 - **New — LIVE since 2026-10-14:** `apps-script/ws-sync/` (project "WS Sync" in wstradesws@gmail.com, daily 5-6am PT trigger installed by `setup`; seed run found 75/75 trades already logged, 0 missing) — Apps Script port, parity-tested against the Python (`test/parity_test.py`, 18/18 identical). Hourly time-driven trigger in wstradesws@gmail.com; state in hidden `_ws_sync_state` tab; first run de-dupes against existing log rows. Optional ntfy on new trades via Script Property `NTFY_TOPIC`. Parsing rules must stay identical to `ws_parser.py` (incl. multi-leg "Options strategy:" fills).
 - Old desktop task `ws-transactions-sync` **paused** 2026-10-14 (not deleted; re-enable only if the Apps Script version is abandoned — never run both).
 
+### School & Guides digest (built 2026-10-15, waiting on Tim's API key + FAMILY + ntfy)
+- `apps-script/ws-sync/School.gs`, a second file in the WS Sync Apps Script project. Hourly `schoolCheck`: emails matching `SCHOOL_SENDERS` (forwarded by Tim's Gmail filters: sd44.ca, schoolcashonline.com, munchalunch.com, myeducation.gov.bc.ca, upperlynnpac@, ulpachotlunch@, 5thcrownpathfinders@) -> one Claude call each (`claude-opus-5-5`, effort low, JSON schema output, `fallbacks: "default"`) with PDF attachments as document blocks and read-only links only (PDF / Sway / Google Docs-Drive / sd44.ca; never RSVP/confirm/unsubscribe). Urgent -> ntfy now; relevant -> 7pm `schoolDigest`; else dropped.
+- This is the project's one sanctioned LLM use (judgment). Email content is treated as untrusted data; the model has no tools.
+- Script Properties: `ANTHROPIC_API_KEY`, `NTFY_TOPIC`, `FAMILY` (kids' names stay out of the repo). Only 5thcrownpathfinders forwards among the Guides senders; Tim chose not to add the others.
+
 ### Other cloud tasks
 - "Tim's Desk quote refresh" (`trig_01MvnswauVTcGWsfV8LPEv5C`) — **disabled** 2026-10-02 (replaced by the price job).
 - "Claude Queue runner" (`trig_01VDvmdhS7q5u9SVpmK8aYgS`, 7:08am PT daily) + artifact https://claude.ai/artifact/E4sZHcSDYkNKCb2MhvXTHx (db collection `queue`) — judgment work only (read/research/draft); exits immediately when the queue is empty. Never trades or sends anything.
