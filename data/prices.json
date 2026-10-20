@@ -4,121 +4,121 @@
     "symbol": "HXS",
     "yahoo": "HXS.TO",
     "name": "Global X S&P 500 Index Corporate Class ETF",
-    "price": 112.5,
+    "price": 112.35,
     "currency": "CAD",
-    "change_pct": 0.2049,
-    "as_of": "2026-10-20T08:17:51Z"
+    "change_pct": -0.1333,
+    "as_of": "2026-10-20T23:50:44Z"
   },
   {
     "group": 1,
     "symbol": "HXT",
     "yahoo": "HXT.TO",
     "name": "Global X S&P/TSX 60 Index Corporate Class ETF",
-    "price": 96.6,
+    "price": 97.2,
     "currency": "CAD",
-    "change_pct": -0.7092,
-    "as_of": "2026-10-20T08:17:51Z"
+    "change_pct": 0.6211,
+    "as_of": "2026-10-20T23:50:44Z"
   },
   {
     "group": 1,
     "symbol": "HBB",
     "yahoo": "HBB.TO",
     "name": "Global X Canadian Select Universe Bond Index Corporate Class ETF",
-    "price": 49.51,
+    "price": 49.71,
     "currency": "CAD",
-    "change_pct": -0.8412,
-    "as_of": "2026-10-20T08:17:51Z"
+    "change_pct": 0.404,
+    "as_of": "2026-10-20T23:50:44Z"
   },
   {
     "group": 1,
     "symbol": "HXCN",
     "yahoo": "HXCN.TO",
     "name": "Global X S&P/TSX Capped Composite Index Corporate Class ETF",
-    "price": 61.41,
+    "price": 61.76,
     "currency": "CAD",
-    "change_pct": -0.6953,
-    "as_of": "2026-10-20T08:17:51Z"
+    "change_pct": 0.5699,
+    "as_of": "2026-10-20T23:50:44Z"
   },
   {
     "group": 1,
     "symbol": "HXQ",
     "yahoo": "HXQ.TO",
     "name": "Global X Nasdaq-100 Index Corporate Class ETF",
-    "price": 119.95,
+    "price": 119.25,
     "currency": "CAD",
-    "change_pct": 0.951,
-    "as_of": "2026-10-20T08:17:51Z"
+    "change_pct": -0.5836,
+    "as_of": "2026-10-20T23:50:44Z"
   },
   {
     "group": 2,
     "symbol": "SPYI",
     "yahoo": "SPYI",
     "name": "Neos S&P 500(R) High Income ETF",
-    "price": 53.54,
+    "price": 53.7,
     "currency": "USD",
-    "change_pct": 0.3561,
-    "as_of": "2026-10-20T08:17:51Z",
-    "yield_ttm": 11.84,
-    "yield_dist": 11.97
+    "change_pct": 0.2988,
+    "as_of": "2026-10-20T23:50:44Z",
+    "yield_ttm": 11.81,
+    "yield_dist": 11.93
   },
   {
     "group": 2,
     "symbol": "QQQI",
     "yahoo": "QQQI",
     "name": "NEOS NASDAQ-100(R) High Income ETF",
-    "price": 54.22,
+    "price": 54.16,
     "currency": "USD",
-    "change_pct": 1.119,
-    "as_of": "2026-10-20T08:17:51Z",
-    "yield_ttm": 14.09,
-    "yield_dist": 14.03
+    "change_pct": -0.1107,
+    "as_of": "2026-10-20T23:50:44Z",
+    "yield_ttm": 14.11,
+    "yield_dist": 14.05
   },
   {
     "group": 2,
     "symbol": "JEPI",
     "yahoo": "JEPI",
     "name": "JPMorgan Equity Premium Income ETF",
-    "price": 57.06,
+    "price": 57.36,
     "currency": "USD",
-    "change_pct": 0.0351,
-    "as_of": "2026-10-20T08:17:51Z",
-    "yield_ttm": 8.0,
-    "yield_dist": 7.17
+    "change_pct": 0.5258,
+    "as_of": "2026-10-20T23:50:44Z",
+    "yield_ttm": 7.96,
+    "yield_dist": 7.13
   },
   {
     "group": 2,
     "symbol": "JEPQ",
     "yahoo": "JEPQ",
     "name": "JPMorgan Nasdaq Equity Premium Income ETF",
-    "price": 59.5,
+    "price": 59.44,
     "currency": "USD",
-    "change_pct": 1.1733,
-    "as_of": "2026-10-20T08:17:51Z",
-    "yield_ttm": 11.57,
-    "yield_dist": 11.44
+    "change_pct": -0.1008,
+    "as_of": "2026-10-20T23:50:44Z",
+    "yield_ttm": 11.58,
+    "yield_dist": 11.45
   },
   {
     "group": 2,
     "symbol": "SCHD",
     "yahoo": "SCHD",
     "name": "Schwab U.S. Dividend Equity ETF",
-    "price": 34.24,
+    "price": 34.69,
     "currency": "USD",
-    "change_pct": -0.3202,
-    "as_of": "2026-10-20T08:17:51Z",
-    "yield_ttm": 3.08,
-    "yield_dist": 3.12
+    "change_pct": 1.3142,
+    "as_of": "2026-10-20T23:50:44Z",
+    "yield_ttm": 3.04,
+    "yield_dist": 3.08
   },
   {
     "group": 2,
     "symbol": "HYLD",
     "yahoo": "HYLD.TO",
     "name": "Hamilton Enhanced U.S. Covered Call ETF",
-    "price": 15.7,
+    "price": 15.69,
     "currency": "CAD",
-    "change_pct": 0.8997,
-    "as_of": "2026-10-20T08:17:51Z",
-    "yield_ttm": 12.02,
-    "yield_dist": 12.61
+    "change_pct": -0.0955,
+    "as_of": "2026-10-20T23:50:44Z",
+    "yield_ttm": 12.03,
+    "yield_dist": 12.62
   }
 ]
