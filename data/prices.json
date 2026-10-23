@@ -7,7 +7,7 @@
     "price": 111.28,
     "currency": "CAD",
     "change_pct": -1.4611,
-    "as_of": "2026-10-22T23:58:25Z"
+    "as_of": "2026-10-23T08:20:46Z"
   },
   {
     "group": 1,
@@ -17,7 +17,7 @@
     "price": 97.31,
     "currency": "CAD",
     "change_pct": -0.562,
-    "as_of": "2026-10-22T23:58:25Z"
+    "as_of": "2026-10-23T08:20:46Z"
   },
   {
     "group": 1,
@@ -27,7 +27,7 @@
     "price": 50.06,
     "currency": "CAD",
     "change_pct": 0.4011,
-    "as_of": "2026-10-22T23:58:25Z"
+    "as_of": "2026-10-23T08:20:46Z"
   },
   {
     "group": 1,
@@ -37,7 +37,7 @@
     "price": 61.53,
     "currency": "CAD",
     "change_pct": -1.0216,
-    "as_of": "2026-10-22T23:58:25Z"
+    "as_of": "2026-10-23T08:20:46Z"
   },
   {
     "group": 1,
@@ -47,7 +47,7 @@
     "price": 116.81,
     "currency": "CAD",
     "change_pct": -3.1507,
-    "as_of": "2026-10-22T23:58:25Z"
+    "as_of": "2026-10-23T08:20:46Z"
   },
   {
     "group": 2,
@@ -57,7 +57,7 @@
     "price": 52.87,
     "currency": "USD",
     "change_pct": -1.011,
-    "as_of": "2026-10-22T23:58:25Z",
+    "as_of": "2026-10-23T08:20:46Z",
     "yield_ttm": 11.96,
     "yield_dist": 11.55
   },
@@ -69,7 +69,7 @@
     "price": 52.59,
     "currency": "USD",
     "change_pct": -2.6111,
-    "as_of": "2026-10-22T23:58:25Z",
+    "as_of": "2026-10-23T08:20:46Z",
     "yield_ttm": 14.51,
     "yield_dist": 14.47
   },
@@ -81,7 +81,7 @@
     "price": 57.29,
     "currency": "USD",
     "change_pct": -0.1046,
-    "as_of": "2026-10-22T23:58:25Z",
+    "as_of": "2026-10-23T08:20:46Z",
     "yield_ttm": 7.96,
     "yield_dist": 7.14
   },
@@ -93,7 +93,7 @@
     "price": 58.42,
     "currency": "USD",
     "change_pct": -2.5521,
-    "as_of": "2026-10-22T23:58:25Z",
+    "as_of": "2026-10-23T08:20:46Z",
     "yield_ttm": 11.79,
     "yield_dist": 11.65
   },
@@ -105,7 +105,7 @@
     "price": 35.4,
     "currency": "USD",
     "change_pct": 2.135,
-    "as_of": "2026-10-22T23:58:25Z",
+    "as_of": "2026-10-23T08:20:46Z",
     "yield_ttm": 2.98,
     "yield_dist": 3.02
   },
@@ -117,7 +117,7 @@
     "price": 15.43,
     "currency": "CAD",
     "change_pct": -2.2799,
-    "as_of": "2026-10-22T23:58:25Z",
+    "as_of": "2026-10-23T08:20:46Z",
     "yield_ttm": 12.23,
     "yield_dist": 12.83
   },
@@ -128,8 +128,8 @@
     "name": "YieldMax Target 12 Big 50 Option Income ETF",
     "price": 51.05,
     "currency": "USD",
-    "change_pct": -2.2396,
-    "as_of": "2026-10-22T23:58:25Z",
+    "change_pct": -2.2386,
+    "as_of": "2026-10-23T08:20:46Z",
     "yield_ttm": 12.36,
     "yield_dist": 12.51
   },
@@ -141,7 +141,7 @@
     "price": 11.18,
     "currency": "CAD",
     "change_pct": -3.4542,
-    "as_of": "2026-10-22T23:58:25Z",
+    "as_of": "2026-10-23T08:20:46Z",
     "yield_ttm": 28.89,
     "yield_dist": 28.98
   },
@@ -150,11 +150,11 @@
     "symbol": "PAYU",
     "yahoo": "PAYU.TO",
     "name": "Brompton U.S. Equity HighPay ETF",
-    "price": 24.37,
+    "price": 23.9,
     "currency": "CAD",
-    "change_pct": 2.0092,
-    "as_of": "2026-10-22T23:58:25Z",
-    "yield_ttm": 4.92,
+    "change_pct": -1.9286,
+    "as_of": "2026-10-23T08:20:46Z",
+    "yield_ttm": 5.02,
     "yield_dist": ""
   },
   {
@@ -162,12 +162,12 @@
     "symbol": "TECY",
     "yahoo": "TECY",
     "name": "Graniteshares YieldBOOST Technology ETF",
-    "price": 19.58,
+    "price": 19.59,
     "currency": "USD",
-    "change_pct": -1.4343,
-    "as_of": "2026-10-22T23:58:25Z",
-    "yield_ttm": 25.09,
-    "yield_dist": 41.95
+    "change_pct": -1.4092,
+    "as_of": "2026-10-23T08:20:46Z",
+    "yield_ttm": 25.08,
+    "yield_dist": 41.94
   },
   {
     "group": 2,
@@ -177,7 +177,7 @@
     "price": 10.05,
     "currency": "CAD",
     "change_pct": -2.6163,
-    "as_of": "2026-10-22T23:58:25Z",
+    "as_of": "2026-10-23T08:20:46Z",
     "yield_ttm": 1.29,
     "yield_dist": ""
   },
@@ -189,7 +189,7 @@
     "price": 25.99,
     "currency": "CAD",
     "change_pct": -3.6694,
-    "as_of": "2026-10-22T23:58:25Z",
+    "as_of": "2026-10-23T08:20:46Z",
     "yield_ttm": 14.43,
     "yield_dist": 14.54
   },
@@ -201,7 +201,7 @@
     "price": 11.91,
     "currency": "CAD",
     "change_pct": -1.5703,
-    "as_of": "2026-10-22T23:58:25Z",
+    "as_of": "2026-10-23T08:20:46Z",
     "yield_ttm": 10.58,
     "yield_dist": 7.05
   },
@@ -213,7 +213,7 @@
     "price": 9.145,
     "currency": "CAD",
     "change_pct": 1.6111,
-    "as_of": "2026-10-22T23:58:25Z",
+    "as_of": "2026-10-23T08:20:46Z",
     "yield_ttm": 12.2,
     "yield_dist": 12.2
   },
@@ -224,8 +224,8 @@
     "name": "Ishares Climate Conscious & Transition MSCI USA ETF",
     "price": 86.35,
     "currency": "USD",
-    "change_pct": -1.3536,
-    "as_of": "2026-10-22T23:58:25Z",
+    "change_pct": -1.3538,
+    "as_of": "2026-10-23T08:20:46Z",
     "yield_ttm": 1.05,
     "yield_dist": 0.93
   },
@@ -237,7 +237,7 @@
     "price": 19.3,
     "currency": "CAD",
     "change_pct": -4.2659,
-    "as_of": "2026-10-22T23:58:25Z",
+    "as_of": "2026-10-23T08:20:46Z",
     "yield_ttm": 10.65,
     "yield_dist": 10.88
   }
