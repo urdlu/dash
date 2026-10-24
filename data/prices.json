@@ -7,7 +7,7 @@
     "price": 110.65,
     "currency": "CAD",
     "change_pct": -0.5661,
-    "as_of": "2026-10-24T07:57:26Z"
+    "as_of": "2026-10-24T12:36:44Z"
   },
   {
     "group": 1,
@@ -17,7 +17,7 @@
     "price": 96.79,
     "currency": "CAD",
     "change_pct": -0.5344,
-    "as_of": "2026-10-24T07:57:26Z"
+    "as_of": "2026-10-24T12:36:44Z"
   },
   {
     "group": 1,
@@ -27,7 +27,7 @@
     "price": 49.96,
     "currency": "CAD",
     "change_pct": -0.2097,
-    "as_of": "2026-10-24T07:57:26Z"
+    "as_of": "2026-10-24T12:36:44Z"
   },
   {
     "group": 1,
@@ -37,7 +37,7 @@
     "price": 61.24,
     "currency": "CAD",
     "change_pct": -0.4632,
-    "as_of": "2026-10-24T07:57:26Z"
+    "as_of": "2026-10-24T12:36:44Z"
   },
   {
     "group": 1,
@@ -47,7 +47,7 @@
     "price": 116.77,
     "currency": "CAD",
     "change_pct": -0.0342,
-    "as_of": "2026-10-24T07:57:26Z"
+    "as_of": "2026-10-24T12:36:44Z"
   },
   {
     "group": 2,
@@ -57,7 +57,7 @@
     "price": 52.64,
     "currency": "USD",
     "change_pct": -0.435,
-    "as_of": "2026-10-24T07:57:26Z",
+    "as_of": "2026-10-24T12:36:44Z",
     "yield_ttm": 12.01,
     "yield_dist": 11.6
   },
@@ -69,7 +69,7 @@
     "price": 52.59,
     "currency": "USD",
     "change_pct": 0.0,
-    "as_of": "2026-10-24T07:57:26Z",
+    "as_of": "2026-10-24T12:36:44Z",
     "yield_ttm": 14.51,
     "yield_dist": 14.47
   },
@@ -81,7 +81,7 @@
     "price": 56.85,
     "currency": "USD",
     "change_pct": -0.768,
-    "as_of": "2026-10-24T07:57:26Z",
+    "as_of": "2026-10-24T12:36:44Z",
     "yield_ttm": 8.03,
     "yield_dist": 7.2
   },
@@ -93,7 +93,7 @@
     "price": 58.43,
     "currency": "USD",
     "change_pct": 0.0171,
-    "as_of": "2026-10-24T07:57:26Z",
+    "as_of": "2026-10-24T12:36:44Z",
     "yield_ttm": 11.79,
     "yield_dist": 11.64
   },
@@ -105,7 +105,7 @@
     "price": 35.27,
     "currency": "USD",
     "change_pct": -0.3672,
-    "as_of": "2026-10-24T07:57:26Z",
+    "as_of": "2026-10-24T12:36:44Z",
     "yield_ttm": 2.99,
     "yield_dist": 3.03
   },
@@ -117,7 +117,7 @@
     "price": 15.36,
     "currency": "CAD",
     "change_pct": -0.4537,
-    "as_of": "2026-10-24T07:57:26Z",
+    "as_of": "2026-10-24T12:36:44Z",
     "yield_ttm": 12.29,
     "yield_dist": 12.89
   },
@@ -129,7 +129,7 @@
     "price": 50.95,
     "currency": "USD",
     "change_pct": -0.2057,
-    "as_of": "2026-10-24T07:57:26Z",
+    "as_of": "2026-10-24T12:36:44Z",
     "yield_ttm": 12.38,
     "yield_dist": 12.53
   },
@@ -141,7 +141,7 @@
     "price": 11.15,
     "currency": "CAD",
     "change_pct": -0.3131,
-    "as_of": "2026-10-24T07:57:26Z",
+    "as_of": "2026-10-24T12:36:44Z",
     "yield_ttm": 28.98,
     "yield_dist": 29.07
   },
@@ -153,7 +153,7 @@
     "price": 23.24,
     "currency": "CAD",
     "change_pct": -2.7615,
-    "as_of": "2026-10-24T07:57:26Z",
+    "as_of": "2026-10-24T12:36:44Z",
     "yield_ttm": 5.16,
     "yield_dist": ""
   },
@@ -165,7 +165,7 @@
     "price": 19.53,
     "currency": "USD",
     "change_pct": -0.3063,
-    "as_of": "2026-10-24T07:57:26Z",
+    "as_of": "2026-10-24T12:36:44Z",
     "yield_ttm": 25.94,
     "yield_dist": 40.74
   },
@@ -177,7 +177,7 @@
     "price": 10.05,
     "currency": "CAD",
     "change_pct": 0.0,
-    "as_of": "2026-10-24T07:57:26Z",
+    "as_of": "2026-10-24T12:36:44Z",
     "yield_ttm": 1.29,
     "yield_dist": ""
   },
@@ -189,7 +189,7 @@
     "price": 25.94,
     "currency": "CAD",
     "change_pct": -0.1924,
-    "as_of": "2026-10-24T07:57:26Z",
+    "as_of": "2026-10-24T12:36:44Z",
     "yield_ttm": 14.46,
     "yield_dist": 14.57
   },
@@ -201,7 +201,7 @@
     "price": 11.89,
     "currency": "CAD",
     "change_pct": -0.1679,
-    "as_of": "2026-10-24T07:57:26Z",
+    "as_of": "2026-10-24T12:36:44Z",
     "yield_ttm": 10.6,
     "yield_dist": 7.06
   },
@@ -213,7 +213,7 @@
     "price": 9.06,
     "currency": "CAD",
     "change_pct": -0.9295,
-    "as_of": "2026-10-24T07:57:26Z",
+    "as_of": "2026-10-24T12:36:44Z",
     "yield_ttm": 12.32,
     "yield_dist": 12.32
   },
@@ -225,7 +225,7 @@
     "price": 85.89,
     "currency": "USD",
     "change_pct": -0.5304,
-    "as_of": "2026-10-24T07:57:26Z",
+    "as_of": "2026-10-24T12:36:44Z",
     "yield_ttm": 1.05,
     "yield_dist": 0.94
   },
@@ -237,7 +237,7 @@
     "price": 19.48,
     "currency": "CAD",
     "change_pct": 0.9326,
-    "as_of": "2026-10-24T07:57:26Z",
+    "as_of": "2026-10-24T12:36:44Z",
     "yield_ttm": 10.55,
     "yield_dist": 10.78
   }
