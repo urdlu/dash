@@ -7,7 +7,7 @@
     "price": 111.51,
     "currency": "CAD",
     "change_pct": 0.7772,
-    "as_of": "2026-10-27T00:24:03Z"
+    "as_of": "2026-10-27T08:45:44Z"
   },
   {
     "group": 1,
@@ -17,7 +17,7 @@
     "price": 97.19,
     "currency": "CAD",
     "change_pct": 0.4133,
-    "as_of": "2026-10-27T00:24:03Z"
+    "as_of": "2026-10-27T08:45:44Z"
   },
   {
     "group": 1,
@@ -27,7 +27,7 @@
     "price": 49.95,
     "currency": "CAD",
     "change_pct": -0.01,
-    "as_of": "2026-10-27T00:24:03Z"
+    "as_of": "2026-10-27T08:45:44Z"
   },
   {
     "group": 1,
@@ -37,7 +37,7 @@
     "price": 61.43,
     "currency": "CAD",
     "change_pct": 0.3103,
-    "as_of": "2026-10-27T00:24:03Z"
+    "as_of": "2026-10-27T08:45:44Z"
   },
   {
     "group": 1,
@@ -47,65 +47,65 @@
     "price": 118.12,
     "currency": "CAD",
     "change_pct": 1.1561,
-    "as_of": "2026-10-27T00:24:03Z"
+    "as_of": "2026-10-27T08:45:44Z"
   },
   {
     "group": 2,
     "symbol": "SPYI",
     "yahoo": "SPYI",
     "name": "Neos S&P 500(R) High Income ETF",
-    "price": 52.64,
+    "price": 53.0,
     "currency": "USD",
-    "change_pct": -0.435,
-    "as_of": "2026-10-27T00:24:03Z",
-    "yield_ttm": 12.01,
-    "yield_dist": 11.6
+    "change_pct": 0.6839,
+    "as_of": "2026-10-27T08:45:44Z",
+    "yield_ttm": 11.93,
+    "yield_dist": 11.52
   },
   {
     "group": 2,
     "symbol": "QQQI",
     "yahoo": "QQQI",
     "name": "NEOS NASDAQ-100(R) High Income ETF",
-    "price": 52.59,
+    "price": 53.17,
     "currency": "USD",
-    "change_pct": 0.0,
-    "as_of": "2026-10-27T00:24:03Z",
-    "yield_ttm": 14.51,
-    "yield_dist": 14.47
+    "change_pct": 1.1029,
+    "as_of": "2026-10-27T08:45:44Z",
+    "yield_ttm": 14.35,
+    "yield_dist": 14.31
   },
   {
     "group": 2,
     "symbol": "JEPI",
     "yahoo": "JEPI",
     "name": "JPMorgan Equity Premium Income ETF",
-    "price": 56.85,
+    "price": 57.08,
     "currency": "USD",
-    "change_pct": -0.768,
-    "as_of": "2026-10-27T00:24:03Z",
-    "yield_ttm": 8.03,
-    "yield_dist": 7.2
+    "change_pct": 0.4046,
+    "as_of": "2026-10-27T08:45:44Z",
+    "yield_ttm": 7.99,
+    "yield_dist": 7.17
   },
   {
     "group": 2,
     "symbol": "JEPQ",
     "yahoo": "JEPQ",
     "name": "JPMorgan Nasdaq Equity Premium Income ETF",
-    "price": 58.43,
+    "price": 59.02,
     "currency": "USD",
-    "change_pct": 0.0171,
-    "as_of": "2026-10-27T00:24:03Z",
-    "yield_ttm": 11.79,
-    "yield_dist": 11.64
+    "change_pct": 1.0098,
+    "as_of": "2026-10-27T08:45:44Z",
+    "yield_ttm": 11.67,
+    "yield_dist": 11.53
   },
   {
     "group": 2,
     "symbol": "SCHD",
     "yahoo": "SCHD",
     "name": "Schwab U.S. Dividend Equity ETF",
-    "price": 35.27,
+    "price": 35.3,
     "currency": "USD",
-    "change_pct": -0.3672,
-    "as_of": "2026-10-27T00:24:03Z",
+    "change_pct": 0.0851,
+    "as_of": "2026-10-27T08:45:44Z",
     "yield_ttm": 2.99,
     "yield_dist": 3.03
   },
@@ -117,7 +117,7 @@
     "price": 15.52,
     "currency": "CAD",
     "change_pct": 1.0417,
-    "as_of": "2026-10-27T00:24:03Z",
+    "as_of": "2026-10-27T08:45:44Z",
     "yield_ttm": 12.16,
     "yield_dist": 12.76
   },
@@ -129,7 +129,7 @@
     "price": 10.21,
     "currency": "CAD",
     "change_pct": 1.592,
-    "as_of": "2026-10-27T00:24:03Z",
+    "as_of": "2026-10-27T08:45:44Z",
     "yield_ttm": 1.27,
     "yield_dist": ""
   },
@@ -141,7 +141,7 @@
     "price": 26.31,
     "currency": "CAD",
     "change_pct": 1.4264,
-    "as_of": "2026-10-27T00:24:03Z",
+    "as_of": "2026-10-27T08:45:44Z",
     "yield_ttm": 14.25,
     "yield_dist": 14.37
   },
@@ -153,7 +153,7 @@
     "price": 11.97,
     "currency": "CAD",
     "change_pct": 0.6728,
-    "as_of": "2026-10-27T00:24:03Z",
+    "as_of": "2026-10-27T08:45:44Z",
     "yield_ttm": 10.53,
     "yield_dist": 7.02
   },
@@ -165,7 +165,7 @@
     "price": 9.065,
     "currency": "CAD",
     "change_pct": 0.0552,
-    "as_of": "2026-10-27T00:24:03Z",
+    "as_of": "2026-10-27T08:45:44Z",
     "yield_ttm": 12.31,
     "yield_dist": 12.31
   },
@@ -174,12 +174,12 @@
     "symbol": "USCL",
     "yahoo": "USCL",
     "name": "Ishares Climate Conscious & Transition MSCI USA ETF",
-    "price": 85.89,
+    "price": 86.39,
     "currency": "USD",
-    "change_pct": -0.5304,
-    "as_of": "2026-10-27T00:24:03Z",
+    "change_pct": 0.5868,
+    "as_of": "2026-10-27T08:45:44Z",
     "yield_ttm": 1.05,
-    "yield_dist": 0.94
+    "yield_dist": 0.93
   },
   {
     "group": 2,
@@ -189,7 +189,7 @@
     "price": 19.82,
     "currency": "CAD",
     "change_pct": 1.7454,
-    "as_of": "2026-10-27T00:24:03Z",
+    "as_of": "2026-10-27T08:45:44Z",
     "yield_ttm": 10.37,
     "yield_dist": 10.6
   },
@@ -201,7 +201,7 @@
     "price": 29.56,
     "currency": "CAD",
     "change_pct": 1.2329,
-    "as_of": "2026-10-27T00:24:03Z",
+    "as_of": "2026-10-27T08:45:44Z",
     "yield_ttm": 16.14,
     "yield_dist": 10.96
   },
@@ -212,8 +212,8 @@
     "name": "HAMILTON CHAMPIONS U.S. Dividend Index CDN$ Hedged Units",
     "price": 18.51,
     "currency": "CAD",
-    "change_pct": 1.2582,
-    "as_of": "2026-10-27T00:24:03Z",
+    "change_pct": 0.0,
+    "as_of": "2026-10-27T08:45:44Z",
     "yield_ttm": 2.12,
     "yield_dist": 2.14
   },
@@ -225,7 +225,7 @@
     "price": 21.83,
     "currency": "CAD",
     "change_pct": 0.3217,
-    "as_of": "2026-10-27T00:24:03Z",
+    "as_of": "2026-10-27T08:45:44Z",
     "yield_ttm": 2.63,
     "yield_dist": 2.64
   },
@@ -234,10 +234,10 @@
     "symbol": "IMAX",
     "yahoo": "IMAX",
     "name": "IMAX Corporation",
-    "price": 53.38,
+    "price": 52.08,
     "currency": "USD",
-    "change_pct": 2.0455,
-    "as_of": "2026-10-27T00:24:03Z",
+    "change_pct": -2.4354,
+    "as_of": "2026-10-27T08:45:44Z",
     "yield_ttm": "",
     "yield_dist": ""
   },
@@ -249,7 +249,7 @@
     "price": 20.19,
     "currency": "CAD",
     "change_pct": 1.3046,
-    "as_of": "2026-10-27T00:24:03Z",
+    "as_of": "2026-10-27T08:45:44Z",
     "yield_ttm": 0.4,
     "yield_dist": 0.59
   }
