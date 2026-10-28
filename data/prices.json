@@ -4,50 +4,50 @@
     "symbol": "HXS",
     "yahoo": "HXS.TO",
     "name": "Global X S&P 500 Index Corporate Class ETF",
-    "price": 111.51,
+    "price": 112.45,
     "currency": "CAD",
-    "change_pct": 0.7772,
-    "as_of": "2026-10-27T08:45:44Z"
+    "change_pct": 0.843,
+    "as_of": "2026-10-28T00:29:29Z"
   },
   {
     "group": 1,
     "symbol": "HXT",
     "yahoo": "HXT.TO",
     "name": "Global X S&P/TSX 60 Index Corporate Class ETF",
-    "price": 97.19,
+    "price": 97.59,
     "currency": "CAD",
-    "change_pct": 0.4133,
-    "as_of": "2026-10-27T08:45:44Z"
+    "change_pct": 0.4116,
+    "as_of": "2026-10-28T00:29:29Z"
   },
   {
     "group": 1,
     "symbol": "HBB",
     "yahoo": "HBB.TO",
     "name": "Global X Canadian Select Universe Bond Index Corporate Class ETF",
-    "price": 49.95,
+    "price": 50.02,
     "currency": "CAD",
-    "change_pct": -0.01,
-    "as_of": "2026-10-27T08:45:44Z"
+    "change_pct": 0.1401,
+    "as_of": "2026-10-28T00:29:29Z"
   },
   {
     "group": 1,
     "symbol": "HXCN",
     "yahoo": "HXCN.TO",
     "name": "Global X S&P/TSX Capped Composite Index Corporate Class ETF",
-    "price": 61.43,
+    "price": 61.88,
     "currency": "CAD",
-    "change_pct": 0.3103,
-    "as_of": "2026-10-27T08:45:44Z"
+    "change_pct": 0.7325,
+    "as_of": "2026-10-28T00:29:29Z"
   },
   {
     "group": 1,
     "symbol": "HXQ",
     "yahoo": "HXQ.TO",
     "name": "Global X Nasdaq-100 Index Corporate Class ETF",
-    "price": 118.12,
+    "price": 119.82,
     "currency": "CAD",
-    "change_pct": 1.1561,
-    "as_of": "2026-10-27T08:45:44Z"
+    "change_pct": 1.4392,
+    "as_of": "2026-10-28T00:29:29Z"
   },
   {
     "group": 2,
@@ -57,7 +57,7 @@
     "price": 53.0,
     "currency": "USD",
     "change_pct": 0.6839,
-    "as_of": "2026-10-27T08:45:44Z",
+    "as_of": "2026-10-28T00:29:29Z",
     "yield_ttm": 11.93,
     "yield_dist": 11.52
   },
@@ -69,7 +69,7 @@
     "price": 53.17,
     "currency": "USD",
     "change_pct": 1.1029,
-    "as_of": "2026-10-27T08:45:44Z",
+    "as_of": "2026-10-28T00:29:29Z",
     "yield_ttm": 14.35,
     "yield_dist": 14.31
   },
@@ -81,7 +81,7 @@
     "price": 57.08,
     "currency": "USD",
     "change_pct": 0.4046,
-    "as_of": "2026-10-27T08:45:44Z",
+    "as_of": "2026-10-28T00:29:29Z",
     "yield_ttm": 7.99,
     "yield_dist": 7.17
   },
@@ -93,7 +93,7 @@
     "price": 59.02,
     "currency": "USD",
     "change_pct": 1.0098,
-    "as_of": "2026-10-27T08:45:44Z",
+    "as_of": "2026-10-28T00:29:29Z",
     "yield_ttm": 11.67,
     "yield_dist": 11.53
   },
@@ -105,7 +105,7 @@
     "price": 35.3,
     "currency": "USD",
     "change_pct": 0.0851,
-    "as_of": "2026-10-27T08:45:44Z",
+    "as_of": "2026-10-28T00:29:29Z",
     "yield_ttm": 2.99,
     "yield_dist": 3.03
   },
@@ -114,23 +114,23 @@
     "symbol": "HYLD",
     "yahoo": "HYLD.TO",
     "name": "Hamilton Enhanced U.S. Covered Call ETF",
-    "price": 15.52,
+    "price": 15.67,
     "currency": "CAD",
-    "change_pct": 1.0417,
-    "as_of": "2026-10-27T08:45:44Z",
-    "yield_ttm": 12.16,
-    "yield_dist": 12.76
+    "change_pct": 0.9665,
+    "as_of": "2026-10-28T00:29:29Z",
+    "yield_ttm": 12.04,
+    "yield_dist": 12.64
   },
   {
     "group": 2,
     "symbol": "USHI",
     "yahoo": "USHI.TO",
     "name": "Ninepoint Enhanced U.S. Equity HighShares ETF CAD Inc",
-    "price": 10.21,
+    "price": 10.4,
     "currency": "CAD",
-    "change_pct": 1.592,
-    "as_of": "2026-10-27T08:45:44Z",
-    "yield_ttm": 1.27,
+    "change_pct": 1.8609,
+    "as_of": "2026-10-28T00:29:29Z",
+    "yield_ttm": 1.25,
     "yield_dist": ""
   },
   {
@@ -138,24 +138,24 @@
     "symbol": "QQCL",
     "yahoo": "QQCL.TO",
     "name": "Global X Enhanced NASDAQ-100 Covered Call ETF",
-    "price": 26.31,
+    "price": 26.71,
     "currency": "CAD",
-    "change_pct": 1.4264,
-    "as_of": "2026-10-27T08:45:44Z",
-    "yield_ttm": 14.25,
-    "yield_dist": 14.37
+    "change_pct": 1.5203,
+    "as_of": "2026-10-28T00:29:29Z",
+    "yield_ttm": 14.04,
+    "yield_dist": 14.15
   },
   {
     "group": 2,
     "symbol": "HPYE",
     "yahoo": "HPYE.TO",
     "name": "Harvest Premium Yield Enhanced ETF Class A",
-    "price": 11.97,
+    "price": 12.11,
     "currency": "CAD",
-    "change_pct": 0.6728,
-    "as_of": "2026-10-27T08:45:44Z",
-    "yield_ttm": 10.53,
-    "yield_dist": 7.02
+    "change_pct": 1.1696,
+    "as_of": "2026-10-28T00:29:29Z",
+    "yield_ttm": 10.4,
+    "yield_dist": 6.94
   },
   {
     "group": 2,
@@ -164,8 +164,8 @@
     "name": "Harvest Healthcare Leaders Enhanced Income ETF - Class A Units",
     "price": 9.065,
     "currency": "CAD",
-    "change_pct": 0.0552,
-    "as_of": "2026-10-27T08:45:44Z",
+    "change_pct": 0.0,
+    "as_of": "2026-10-28T00:29:29Z",
     "yield_ttm": 12.31,
     "yield_dist": 12.31
   },
@@ -177,7 +177,7 @@
     "price": 86.39,
     "currency": "USD",
     "change_pct": 0.5868,
-    "as_of": "2026-10-27T08:45:44Z",
+    "as_of": "2026-10-28T00:29:29Z",
     "yield_ttm": 1.05,
     "yield_dist": 0.93
   },
@@ -186,48 +186,48 @@
     "symbol": "HTAE",
     "yahoo": "HTAE.TO",
     "name": "Harvest Tech Leaders Enhanced Income ETF CAD Hedged",
-    "price": 19.82,
+    "price": 20.15,
     "currency": "CAD",
-    "change_pct": 1.7454,
-    "as_of": "2026-10-27T08:45:44Z",
-    "yield_ttm": 10.37,
-    "yield_dist": 10.6
+    "change_pct": 1.665,
+    "as_of": "2026-10-28T00:29:29Z",
+    "yield_ttm": 10.2,
+    "yield_dist": 10.42
   },
   {
     "group": 2,
     "symbol": "SIXY",
     "yahoo": "SIXY.TO",
     "name": "Evolve Big Six Canadian Banks UltraYield Index ETF",
-    "price": 29.56,
+    "price": 29.86,
     "currency": "CAD",
-    "change_pct": 1.2329,
-    "as_of": "2026-10-27T08:45:44Z",
-    "yield_ttm": 16.14,
-    "yield_dist": 10.96
+    "change_pct": 1.0149,
+    "as_of": "2026-10-28T00:29:29Z",
+    "yield_ttm": 15.97,
+    "yield_dist": 10.85
   },
   {
     "group": 2,
     "symbol": "SMVP",
     "yahoo": "SMVP.TO",
     "name": "HAMILTON CHAMPIONS U.S. Dividend Index CDN$ Hedged Units",
-    "price": 18.51,
+    "price": 18.4,
     "currency": "CAD",
-    "change_pct": 0.0,
-    "as_of": "2026-10-27T08:45:44Z",
-    "yield_ttm": 2.12,
-    "yield_dist": 2.14
+    "change_pct": -0.5943,
+    "as_of": "2026-10-28T00:29:29Z",
+    "yield_ttm": 2.14,
+    "yield_dist": 2.15
   },
   {
     "group": 2,
     "symbol": "CMVP",
     "yahoo": "CMVP.TO",
     "name": "HAMILTON CHAMPIONS Canadian Dividend Index ETF Class E Units",
-    "price": 21.83,
+    "price": 21.94,
     "currency": "CAD",
-    "change_pct": 0.3217,
-    "as_of": "2026-10-27T08:45:44Z",
-    "yield_ttm": 2.63,
-    "yield_dist": 2.64
+    "change_pct": 0.5039,
+    "as_of": "2026-10-28T00:29:29Z",
+    "yield_ttm": 2.62,
+    "yield_dist": 2.63
   },
   {
     "group": 2,
@@ -237,7 +237,7 @@
     "price": 52.08,
     "currency": "USD",
     "change_pct": -2.4354,
-    "as_of": "2026-10-27T08:45:44Z",
+    "as_of": "2026-10-28T00:29:29Z",
     "yield_ttm": "",
     "yield_dist": ""
   },
@@ -246,11 +246,11 @@
     "symbol": "QMVP",
     "yahoo": "QMVP.TO",
     "name": "HAMILTON CHAMPIONS U.S. Technology Index ETF",
-    "price": 20.19,
+    "price": 20.76,
     "currency": "CAD",
-    "change_pct": 1.3046,
-    "as_of": "2026-10-27T08:45:44Z",
-    "yield_ttm": 0.4,
-    "yield_dist": 0.59
+    "change_pct": 2.8232,
+    "as_of": "2026-10-28T00:29:29Z",
+    "yield_ttm": 0.39,
+    "yield_dist": 0.58
   }
 ]
